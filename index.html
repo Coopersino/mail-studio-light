@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Письмо Light — редактор HTML-писем. Соберите письмо, скопируйте оформление в Outlook или скачайте HTML.">
+  <meta name="theme-color" content="#244b3b">
+  <title>Письмо Light — HTML-письма</title>
+  <style>
+    :root { --ink:#233a30; --muted:#65736b; --paper:#f3f2ed; --line:#dce1d9; --green:#244b3b; --white:#fff; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--paper); font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+    button,input,textarea,select { font:inherit; }
+    button,a,input,textarea,select { -webkit-tap-highlight-color:transparent; }
+    button { cursor:pointer; }
+    button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible { outline:3px solid #af8c4a; outline-offset:3px; }
+    a { color:inherit; }
+    .topbar { min-height:80px; border-bottom:1px solid var(--line); padding:16px 32px; display:flex; align-items:center; justify-content:space-between; gap:20px; background:#f9f9f5; position:sticky; top:0; z-index:3; }
+    .brand { display:flex; align-items:center; gap:12px; text-decoration:none; }
+    .brand-mark { display:grid; width:38px; height:38px; place-items:center; background:var(--green); color:#fff; }
+    .brand-name { display:block; font:normal 28px/1 Georgia,'Times New Roman',serif; letter-spacing:-1px; }
+    .toplinks { display:flex; gap:22px; align-items:center; font-size:12px; }
+    .toplinks button { padding:0; border:0; background:none; color:var(--muted); }
+    .toplinks button:hover { color:var(--green); text-decoration:underline; }
+    .workspace { display:grid; grid-template-columns:350px minmax(0,1fr); max-width:1600px; margin:auto; }
+    .editor { border-right:1px solid var(--line); background:#fbfbf8; padding:30px 24px 36px; position:sticky; top:80px; max-height:calc(100vh - 80px); overflow-y:auto; align-self:start; }
+    .step { margin:0 0 8px; color:#7a887b; font:11px/1.4 ui-monospace,SFMono-Regular,monospace; letter-spacing:1px; text-transform:uppercase; }
+    h1 { margin:0 0 8px; font:normal 30px/1.15 Georgia,'Times New Roman',serif; letter-spacing:-.7px; }
+    .lead { margin:0 0 24px; color:var(--muted); font-size:13px; }
+    .label { display:block; color:#41594b; margin:18px 0 7px; font-size:12px; font-weight:500; }
+    input[type=text],input[type=url],textarea,select { width:100%; display:block; padding:10px 11px; color:var(--ink); background:#fff; border:1px solid #cfd8cf; border-radius:3px; }
+    textarea { resize:vertical; min-height:190px; line-height:1.65; }
+    input::placeholder,textarea::placeholder { color:#89918b; }
+    .hint { display:block; margin:6px 0 0; color:#768278; font-size:11px; line-height:1.5; }
+    .hint.error { color:#a0352f; }
+    .tabs { display:flex; margin:25px -24px 20px; padding:0 24px; gap:22px; border-bottom:1px solid var(--line); }
+    .tab { border:0; border-bottom:2px solid transparent; background:transparent; padding:0 0 12px; font-size:12px; color:#758177; }
+    .tab[aria-selected=true] { color:var(--green); border-bottom-color:var(--green); font-weight:600; }
+    [hidden] { display:none !important; }
+    .field-group { margin-top:24px; padding-top:2px; border-top:1px solid var(--line); }
+    .group-title { margin:15px 0 5px; font-size:11px; color:#778479; text-transform:uppercase; letter-spacing:1px; }
+    .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .color-row { display:flex; gap:9px; align-items:center; margin-top:12px; }
+    .swatch { width:29px; height:29px; border-radius:50%; border:3px solid #fbfbf8; outline:1px solid #ccd5cc; }
+    .swatch[aria-pressed=true] { outline:2px solid #526e5a; outline-offset:2px; }
+    input[type=color] { width:34px; height:34px; padding:2px; margin-left:auto; background:#fff; border:1px solid var(--line); cursor:pointer; }
+    .privacy { display:flex; gap:7px; margin:28px 0 0; color:#738074; font-size:11px; align-items:baseline; }
+    .save-dot { width:5px; height:5px; background:#738d71; border-radius:50%; flex-shrink:0; }
+    .main { min-width:0; padding:28px 32px 48px; }
+    .toolbar { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:22px; }
+    .view-controls,.export-controls { display:flex; align-items:center; gap:8px; }
+    .view-controls { background:#e5e9e1; border-radius:4px; padding:3px; }
+    .view-button { border:0; padding:8px 12px; font-size:11px; color:#6b786d; background:transparent; border-radius:3px; }
+    .view-button[aria-pressed=true] { background:#fff; color:var(--green); box-shadow:0 1px 3px #233a3009; }
+    .action { display:inline-flex; gap:8px; align-items:center; justify-content:center; border:1px solid #c9d3c8; padding:11px 15px; border-radius:3px; color:var(--green); background:transparent; font-size:12px; font-weight:600; transition:background 150ms; }
+    .action:hover { background:#e8ede5; }
+    .action.primary { background:var(--green); color:#fff; border-color:var(--green); }
+    .action.primary:hover { background:#193b2c; }
+    .preview-meta { max-width:600px; margin:0 auto 14px; display:flex; justify-content:space-between; gap:16px; color:#778278; font:10px/1.5 ui-monospace,SFMono-Regular,monospace; letter-spacing:.6px; text-transform:uppercase; }
+    .stage { padding:24px; min-height:700px; background-color:#e8ece4; background-image:radial-gradient(#bac6b880 .7px,transparent .7px); background-size:10px 10px; border:1px solid #d9e0d5; }
+    .letter-wrap { max-width:600px; width:100%; margin:auto; background:#fff; box-shadow:0 8px 28px #30482e12; transition:max-width 180ms ease-out; }
+    iframe { display:block; border:0; width:100%; min-height:300px; background:#fff; }
+    .subjectline { width:100%; max-width:600px; margin:0 auto 18px; padding-bottom:12px; border-bottom:1px solid #cfd9c9; color:#445b4b; font-size:12px; overflow-wrap:anywhere; }
+    .subjectline span { color:#788576; margin-right:8px; }
+    .below-preview { max-width:600px; margin:16px auto 0; color:#6f7b70; font-size:11px; line-height:1.7; }
+    .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:5; max-width:min(600px,calc(100% - 32px)); padding:14px 20px; color:#fff; background:#223e30; border:1px solid #41614b; border-radius:4px; box-shadow:0 6px 30px #20372d26; font-size:13px; }
+    .toast.error { background:#803f35; }
+    dialog { max-width:520px; width:calc(100% - 32px); border:1px solid var(--line); padding:32px; color:var(--ink); background:#fbfbf8; border-radius:4px; }
+    dialog::backdrop { background:#162b23a6; }
+    dialog h2 { margin:0 0 20px; font:normal 27px Georgia,serif; }
+    dialog li { margin-bottom:12px; padding-left:6px; color:#4b6152; }
+    dialog ol { padding-left:18px; }
+    dialog p { font-size:13px; color:#6e7a70; }
+    .small-button { padding:5px 0; border:0; background:transparent; color:#6b7d6e; font-size:11px; text-decoration:underline; }
+    @media (max-width:1150px) { .workspace { grid-template-columns:310px minmax(0,1fr); } .main { padding:24px 20px 40px; } .stage { padding:16px; } .toolbar { gap:10px; } }
+    @media (max-width:820px) { .topbar { padding:16px 20px; position:static; } .workspace { grid-template-columns:1fr; } .editor { border-right:0; border-bottom:1px solid var(--line); padding:24px 20px; position:static; max-height:none; overflow:visible; } .tabs { margin-left:-20px; margin-right:-20px; padding-left:20px; } .main { padding:24px 12px 32px; } .stage { padding:12px 0; min-height:400px; } .toolbar { justify-content:center; } .preview-meta { padding:0 8px; } .field-row { grid-template-columns:1fr 1fr; } .toplinks { gap:16px; } }
+    @media (max-width:380px) { .action { padding:10px; font-size:11px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Письмо — главная">
+      <span class="brand-mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6h18v13H3zM3 6l9 7 9-7" stroke="currentColor" stroke-width="1.4"/></svg></span>
+      <span class="brand-name">Письмо</span>
+    </a>
+    <nav class="toplinks" aria-label="Ссылки"><button type="button" id="help">Как отправить</button></nav>
+  </header>
+  <main class="workspace">
+    <section class="editor" aria-label="Редактор письма">
+      <p class="step">01 / Содержание</p>
+      <h1>Хорошее письмо.<br>Своими словами.</h1>
+      <p class="lead">Соберите, оформите и вставьте в Outlook.</p>
+      <label class="label" for="template">С чего начнём</label>
+      <select id="template"><option value="newyear">Новогоднее поздравление</option><option value="announcement">Анонс и приглашение</option><option value="blank">Чистый шаблон</option></select>
+      <button class="small-button" id="undo-template" type="button" hidden>Отменить смену шаблона</button>
+      <div class="tabs" role="tablist" aria-label="Настройки письма">
+        <button class="tab" id="content-tab" type="button" role="tab" aria-selected="true" aria-controls="content-panel">Содержание</button>
+        <button class="tab" id="design-tab" type="button" role="tab" aria-selected="false" aria-controls="design-panel" tabindex="-1">Оформление</button>
+      </div>
+      <div id="content-panel" role="tabpanel" aria-labelledby="content-tab">
+        <label class="label" for="subject">Тема письма</label><input id="subject" data-field="subject" type="text" maxlength="250">
+        <span class="hint">Тему нужно перенести в Outlook отдельно.</span>
+        <label class="label" for="eyebrow">Подзаголовок над заголовком</label><input id="eyebrow" data-field="eyebrow" type="text" maxlength="120" placeholder="Можно оставить пустым">
+        <label class="label" for="title">Заголовок</label><input id="title" data-field="title" type="text" maxlength="250">
+        <label class="label" for="greeting">Обращение</label><input id="greeting" data-field="greeting" type="text" maxlength="250" placeholder="Например: Саша, с праздником!">
+        <label class="label" for="body">Текст письма</label><textarea id="body" data-field="body" maxlength="30000"></textarea><span class="hint">Пустая строка начинает новый абзац.</span>
+        <label class="label" for="signature">Подпись</label><textarea id="signature" data-field="signature" rows="2" style="min-height:78px" maxlength="1000" placeholder="С наилучшими пожеланиями,&#10;Ваше имя"></textarea>
+        <div class="field-group"><p class="group-title">Изображение</p>
+          <label class="label" for="image">Ссылка на картинку</label><input id="image" data-field="image" type="url" placeholder="https://…" maxlength="4000" aria-describedby="image-hint"><span class="hint" id="image-hint">Прямая HTTPS-ссылка на изображение. Пустое поле убирает картинку.</span>
+          <label class="label" for="imageAlt">Описание картинки</label><input id="imageAlt" data-field="imageAlt" type="text" maxlength="300" placeholder="Текст, если картинка не загрузится">
+        </div>
+        <div class="field-group"><p class="group-title">Кнопка · необязательно</p>
+          <label class="label" for="buttonText">Текст кнопки</label><input id="buttonText" data-field="buttonText" type="text" maxlength="120" placeholder="Узнать подробнее">
+          <label class="label" for="buttonUrl">Ссылка кнопки</label><input id="buttonUrl" data-field="buttonUrl" type="url" maxlength="4000" placeholder="https://…" aria-describedby="button-hint"><span class="hint" id="button-hint">Заполните оба поля или оставьте оба пустыми.</span>
+        </div>
+      </div>
+      <div id="design-panel" role="tabpanel" aria-labelledby="design-tab" hidden>
+        <label class="label" for="accent">Акцентный цвет</label>
+        <div class="color-row" aria-label="Цветовые варианты">
+          <button type="button" class="swatch" data-color="#244b3b" style="background:#244b3b" aria-label="Хвойный" aria-pressed="true"></button>
+          <button type="button" class="swatch" data-color="#284b6b" style="background:#284b6b" aria-label="Синий" aria-pressed="false"></button>
+          <button type="button" class="swatch" data-color="#783f50" style="background:#783f50" aria-label="Бордовый" aria-pressed="false"></button>
+          <button type="button" class="swatch" data-color="#a44c31" style="background:#a44c31" aria-label="Терракотовый" aria-pressed="false"></button>
+          <input id="accent" data-field="accent" type="color" value="#244b3b" title="Свой акцентный цвет">
+        </div>
+        <label class="label" for="surface">Фон письма</label><select id="surface" data-field="surface"><option value="#fbf8f2">Тёплая бумага</option><option value="#ffffff">Белый</option><option value="#f0f4f0">Светлый шалфей</option></select>
+        <label class="label" for="font">Шрифт заголовка</label><select id="font" data-field="font"><option value="serif">Georgia · с засечками</option><option value="sans">Arial · без засечек</option></select>
+        <label class="label" for="width">Ширина письма</label><select id="width" data-field="width"><option value="600">600 px</option></select>
+        <p class="hint" style="margin-top:24px">В письме используются таблицы и встроенные стили. Отображение может различаться в почтовых клиентах — отправьте тест себе.</p>
+      </div>
+      <div class="privacy"><span class="save-dot" aria-hidden="true"></span><span id="save-status">Черновик хранится в этом браузере</span></div>
+    </section>
+    <section class="main" aria-label="Предпросмотр и экспорт">
+      <div class="toolbar">
+        <div class="view-controls" aria-label="Режим просмотра">
+          <button class="view-button" type="button" id="desktop" aria-pressed="true">Компьютер</button>
+          <button class="view-button" type="button" id="mobile" aria-pressed="false">Телефон</button>
+        </div>
+        <div class="export-controls"><button class="action" id="download" type="button">Скачать HTML ↓</button><button class="action primary" id="copy" type="button">Скопировать для Outlook ↗</button></div>
+      </div>
+      <div class="preview-meta"><span>02 / Ваше письмо</span><span id="size">600 px · HTML</span></div>
+      <div class="stage">
+        <p class="subjectline"><span>Тема</span><strong id="subject-preview"></strong></p>
+        <div class="letter-wrap" id="letter-wrap"><iframe id="preview" title="Предпросмотр HTML-письма" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe></div>
+      </div>
+      <p class="below-preview">Нажмите «Скопировать для Outlook» и вставьте письмо через ⌘V или Ctrl+V. Оформление должно появиться ещё до отправки. Внешние картинки могут быть отключены у получателя.</p>
+    </section>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="guide" aria-labelledby="guide-title"><h2 id="guide-title">От макета — к письму</h2><ol><li>Выберите шаблон и измените содержание.</li><li>Нажмите «Скопировать для Outlook».</li><li>Создайте новое письмо и вставьте через ⌘V на Mac или Ctrl+V на Windows. При необходимости выберите «Сохранить исходное форматирование».</li><li>Отдельно укажите тему и получателей. Сначала отправьте тест себе.</li></ol><p>Кнопка копирует визуальное письмо. HTML-файл предназначен для редакторов и сервисов, которые умеют импортировать код. Вставка исходного кода прямо в Outlook покажет текст кода.</p><p>Черновик сохраняется только в этом браузере. Фотографии загружаются с указанных вами внешних адресов.</p><p>Фото новогоднего шаблона: <a href="https://unsplash.com/photos/a-close-up-of-a-pine-tree-with-lights-in-the-background-8HuVkMCn52g" target="_blank" rel="noopener noreferrer">Alsu Vershinina / Unsplash</a>.</p><button class="action primary" id="close-guide" type="button">Понятно</button></dialog>
+  <script>
+    'use strict';
+    const photo = 'https://images.unsplash.com/photo-1641154666941-3295296a0f5f?fm=jpg&fit=crop&w=1200&h=480&q=85';
+    const base = {subject:'',eyebrow:'',title:'',greeting:'',body:'',signature:'',image:'',imageAlt:'',buttonText:'',buttonUrl:'',accent:'#244b3b',surface:'#fbf8f2',font:'serif',width:'600',template:'newyear'};
+    const templates = {
+      newyear: {...base,subject:'С Новым годом!',eyebrow:'С тёплыми пожеланиями',title:'С Новым годом!',body:'Спасибо за совместную работу в уходящем году!\n\nПусть новый год принесёт интересные задачи, удачные решения и поводы гордиться результатами. Желаю здоровья, спокойствия и сил для всего, что важно.\n\nПусть хватает времени на близких, любимые занятия и хороший отдых. Тёплых праздников и счастливого Нового года!',signature:'С наилучшими пожеланиями!',image:photo,imageAlt:'Еловые ветви и праздничные огни'},
+      announcement: {...base,template:'announcement',subject:'Приглашаем на встречу',eyebrow:'Давайте встретимся',title:'Есть что обсудить.',greeting:'Здравствуйте!',body:'Приглашаем на встречу, чтобы поделиться новостями и обсудить планы.\n\nДобавьте дату, время и формат встречи. Расскажите, что ждёт участников и как присоединиться.',signature:'До встречи!',accent:'#284b6b',surface:'#ffffff',font:'sans'},
+      blank: {...base,template:'blank',subject:'Тема вашего письма',title:'Ваш заголовок',body:'Напишите главное.\n\nДобавьте детали и следующий шаг для получателя.',signature:'С уважением,',surface:'#ffffff',font:'sans'}
+    };
+    const storageKey = 'mail-studio-light.draft.v1';
+    const fields = [...document.querySelectorAll('[data-field]')];
+    const frame = document.getElementById('preview');
+    const letterWrap = document.getElementById('letter-wrap');
+    const toast = document.getElementById('toast');
+    let state = {...templates.newyear};
+    let previousState = null;
+    let view = 'desktop';
+    let toastTimer;
+    let saveTimer;
+
+    // EMAIL_GENERATOR_START — only escaped text and allowlisted values enter the email.
+    function escapeHtml(value) { return String(value).replace(/[&<>"']/g, char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
+    function safeUrl(value, image=false) {
+      try { const url = new URL(String(value).trim()); return (image ? url.protocol==='https:' : ['https:','http:','mailto:'].includes(url.protocol)) ? url.href : ''; } catch (_) { return ''; }
+    }
+    function normalise(value) {
+      const result = {...base};
+      for (const key of Object.keys(base)) if (typeof value[key]==='string') result[key] = value[key].slice(0,key==='body'?30000:4000);
+      if (!/^#[0-9a-f]{6}$/i.test(result.accent)) result.accent=base.accent;
+      if (!['#fbf8f2','#ffffff','#f0f4f0'].includes(result.surface)) result.surface=base.surface;
+      if (!['serif','sans'].includes(result.font)) result.font='serif';
+      result.width='600';
+      if (!['newyear','announcement','blank'].includes(result.template)) result.template='newyear';
+      return result;
+    }
+    function paragraphs(text) { return String(text).trim().split(/\n\s*\n/).filter(Boolean).map(p=>'<p style="margin:0 0 18px;color:#384b40;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:26px;">'+escapeHtml(p).replace(/\n/g,'<br>')+'</p>').join('\n'); }
+    function generateEmail(input) {
+      const s = normalise(input);
+      const image = safeUrl(s.image,true);
+      const link = safeUrl(s.buttonUrl);
+      const font = s.font==='serif' ? "Georgia,'Times New Roman',serif" : 'Arial,Helvetica,sans-serif';
+      const row = (content,padding='0 32px') => '<tr><td bgcolor="'+s.surface+'" style="padding:'+padding+';background-color:'+s.surface+';">'+content+'</td></tr>';
+      const imageRow = image ? '<tr><td style="padding:0;">'+ '<img src="'+escapeHtml(image)+'" alt="'+escapeHtml(s.imageAlt)+'" width="'+s.width+'" border="0" style="display:block;width:100%;max-width:'+s.width+'px;height:auto;border:0;color:#384b40;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;"></td></tr>' : '';
+      const heading = (s.eyebrow.trim()?'<p style="margin:0 0 16px;color:#706747;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:18px;font-weight:bold;letter-spacing:2px;">'+escapeHtml(s.eyebrow.toUpperCase())+'</p>':'')+(s.title.trim()?'<h1 style="margin:0;color:'+s.accent+';font-family:'+font+';font-size:40px;font-weight:normal;line-height:47px;">'+escapeHtml(s.title)+'</h1>':'');
+      const greeting = s.greeting.trim()?'<p style="margin:0 0 18px;color:#384b40;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:26px;font-weight:bold;">'+escapeHtml(s.greeting)+'</p>':'';
+      const button = s.buttonText.trim() && link ? row('<table role="presentation" border="0" cellspacing="0" cellpadding="0"><tr><td bgcolor="'+s.accent+'" style="background-color:'+s.accent+';padding:13px 22px;text-align:center;"><a href="'+escapeHtml(link)+'" style="color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:22px;font-weight:bold;">'+escapeHtml(s.buttonText)+'</a></td></tr></table>','0 32px 28px') : '';
+      const signature = s.signature.trim()?row('<p style="margin:0;color:#384b40;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:25px;">'+escapeHtml(s.signature).replace(/\n/g,'<br>')+'</p>','0 32px 36px'):row('&nbsp;','0 32px 12px');
+      const fragment = '<table role="presentation" width="'+s.width+'" cellspacing="0" cellpadding="0" border="0" bgcolor="'+s.surface+'" lang="ru" style="width:100%;max-width:'+s.width+'px;border-collapse:collapse;background-color:'+s.surface+';color:#384b40;text-align:left;">\n'+imageRow+'\n'+(heading?row(heading,'36px 32px 0'):'')+'\n'+row('<table role="presentation" width="48" cellspacing="0" cellpadding="0" border="0" style="width:48px;border-collapse:collapse;"><tr><td height="2" bgcolor="'+s.accent+'" style="height:2px;background-color:'+s.accent+';font-size:1px;line-height:2px;">&nbsp;</td></tr></table>','24px 32px')+'\n'+row(greeting+paragraphs(s.body),'0 32px 10px')+'\n'+button+'\n'+signature+'\n<tr><td height="6" bgcolor="'+s.accent+'" style="height:6px;background-color:'+s.accent+';font-size:1px;line-height:6px;">&nbsp;</td></tr>\n</table>';
+      const html = '<!doctype html>\n<html lang="ru">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<meta name="referrer" content="no-referrer">\n<meta name="x-apple-disable-message-reformatting">\n<title>'+escapeHtml(s.subject||'Письмо')+'</title>\n</head>\n<body style="margin:0;padding:0;background-color:#ffffff;">\n'+fragment+'\n</body>\n</html>';
+      return {fragment,html};
+    }
+    // EMAIL_GENERATOR_END
+
+    try { const saved=JSON.parse(localStorage.getItem(storageKey)); if (saved && typeof saved==='object' && !Array.isArray(saved)) state=normalise(saved); } catch (_) { /* A new browser or unavailable storage starts with the greeting. */ }
+    function notify(message,error=false) { clearTimeout(toastTimer); toast.textContent=message; toast.classList.toggle('error',error); toast.hidden=false; toastTimer=setTimeout(()=>{toast.hidden=true;},7500); }
+    function fillFields() { fields.forEach(field=>{field.value=state[field.dataset.field];}); document.getElementById('template').value=state.template; updateSwatches(); }
+    function updateSwatches() { document.querySelectorAll('[data-color]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.color.toLowerCase()===state.accent.toLowerCase()))); }
+    function save() { clearTimeout(saveTimer); saveTimer=setTimeout(()=>{try {localStorage.setItem(storageKey,JSON.stringify(state));document.getElementById('save-status').textContent='Черновик сохранён в этом браузере';}catch(_){document.getElementById('save-status').textContent='Автосохранение недоступно — скачайте HTML';}},350); }
+    function resizeFrame() { try { const body=frame.contentDocument.body; if(body) frame.style.height=Math.ceil(body.getBoundingClientRect().height)+'px'; } catch(_) {} }
+    frame.addEventListener('load',()=>{resizeFrame();frame.contentDocument.querySelectorAll('img').forEach(image=>{image.addEventListener('load',resizeFrame);image.addEventListener('error',()=>{resizeFrame();document.getElementById('image-hint').textContent='Картинка не загрузилась в предпросмотре. Проверьте прямую ссылку и доступ к изображению.';});});});
+    function update() {
+      const result=generateEmail(state);
+      frame.srcdoc=result.html;
+      document.getElementById('subject-preview').textContent=state.subject||'Без темы';
+      document.getElementById('size').textContent=state.width+' px · '+(new Blob([result.html]).size/1024).toFixed(1)+' КБ';
+      letterWrap.style.maxWidth=(view==='mobile'?Math.min(375,Number(state.width)):state.width)+'px';
+      const invalidImage=state.image.trim()&&!safeUrl(state.image,true);
+      const imageHint=document.getElementById('image-hint');
+      imageHint.classList.toggle('error',!!invalidImage);
+      imageHint.textContent=invalidImage?'Нужна полная HTTPS-ссылка на изображение.':'Прямая HTTPS-ссылка на изображение. Пустое поле убирает картинку.';
+      document.getElementById('image').setAttribute('aria-invalid',String(!!invalidImage));
+      updateSwatches();save();
+    }
+    fields.forEach(field=>field.addEventListener('input',()=>{state[field.dataset.field]=field.value;update();}));
+    document.querySelectorAll('[data-color]').forEach(button=>button.addEventListener('click',()=>{state.accent=button.dataset.color;document.getElementById('accent').value=state.accent;update();}));
+    document.getElementById('template').addEventListener('change',event=>{previousState={...state};state={...templates[event.target.value]};document.getElementById('undo-template').hidden=false;fillFields();update();notify('Шаблон заменён. Предыдущий черновик можно вернуть кнопкой под списком.');});
+    document.getElementById('undo-template').addEventListener('click',()=>{if(previousState){state=previousState;previousState=null;document.getElementById('undo-template').hidden=true;fillFields();update();}});
+    function setPanel(name) { ['content','design'].forEach(key=>{const active=key===name;document.getElementById(key+'-panel').hidden=!active;const button=document.getElementById(key+'-tab');button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;}); }
+    ['content','design'].forEach(name=>{const button=document.getElementById(name+'-tab');button.addEventListener('click',()=>setPanel(name));button.addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const next=event.key==='Home'?'content':event.key==='End'?'design':name==='content'?'design':'content';setPanel(next);document.getElementById(next+'-tab').focus();}});});
+    ['desktop','mobile'].forEach(name=>document.getElementById(name).addEventListener('click',()=>{view=name;['desktop','mobile'].forEach(key=>document.getElementById(key).setAttribute('aria-pressed',String(key===view)));letterWrap.style.maxWidth=(view==='mobile'?375:600)+'px';requestAnimationFrame(resizeFrame);}));
+    function validForExport() {
+      if(state.image.trim()&&!safeUrl(state.image,true)){notify('Проверьте HTTPS-ссылку на картинку.',true);setPanel('content');document.getElementById('image').focus();return false;}
+      if((state.buttonText.trim()||state.buttonUrl.trim())&&(!state.buttonText.trim()||!safeUrl(state.buttonUrl))){notify('Для кнопки нужны текст и ссылка с https://, http:// или mailto:.',true);setPanel('content');document.getElementById('buttonUrl').focus();return false;}
+      return true;
+    }
+    document.getElementById('copy').addEventListener('click',async()=>{
+      if(!validForExport())return;
+      const {fragment}=generateEmail(state);
+      const doc=frame.contentDocument;
+      const text=[state.eyebrow,state.title,state.greeting,state.body,state.buttonText.trim()&&safeUrl(state.buttonUrl)?state.buttonText+'\n'+safeUrl(state.buttonUrl):'',state.signature].filter(part=>part.trim()).join('\n\n');
+      let copied=false;
+      if(navigator.clipboard&&window.ClipboardItem){try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([fragment],{type:'text/html'}),'text/plain':new Blob([text],{type:'text/plain'})})]);copied=true;}catch(_){}}
+      if(!copied&&doc){
+        const selection=frame.contentWindow.getSelection();const range=doc.createRange();range.selectNodeContents(doc.body);selection.removeAllRanges();selection.addRange(range);
+        const onCopy=event=>{if(event.clipboardData){event.clipboardData.setData('text/html',fragment);event.clipboardData.setData('text/plain',text);event.preventDefault();copied=true;}};
+        doc.addEventListener('copy',onCopy,true);try{copied=doc.execCommand('copy')&&copied;}catch(_){copied=false;}finally{doc.removeEventListener('copy',onCopy,true);}
+        if(copied)selection.removeAllRanges();
+      }
+      if(copied)notify('Письмо скопировано с оформлением. Вставьте в Outlook через ⌘V или Ctrl+V. Тему добавьте отдельно.');
+      else{document.getElementById('desktop').click();notify('Письмо выделено. Нажмите ⌘C или Ctrl+C, затем вставьте в Outlook.',true);frame.focus();}
+    });
+    document.getElementById('download').addEventListener('click',()=>{if(!validForExport())return;const url=URL.createObjectURL(new Blob([generateEmail(state).html],{type:'text/html;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download='email.html';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);notify('HTML подготовлен к скачиванию. Для вставки в Outlook используйте кнопку копирования.');});
+    document.getElementById('help').addEventListener('click',()=>document.getElementById('guide').showModal());
+    document.getElementById('close-guide').addEventListener('click',()=>document.getElementById('guide').close());
+    let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(resizeFrame,150);});
+    fillFields();update();
+  </script>
+</body>
+</html>
