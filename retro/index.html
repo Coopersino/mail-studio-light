@@ -48,11 +48,8 @@
     .privacy { display:flex; gap:7px; margin:28px 0 0; color:#738074; font-size:11px; align-items:baseline; }
     .save-dot { width:5px; height:5px; background:#738d71; border-radius:50%; flex-shrink:0; }
     .main { min-width:0; padding:28px 32px 48px; }
-    .toolbar { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:22px; }
-    .view-controls,.export-controls { display:flex; align-items:center; gap:8px; }
-    .view-controls { background:#e5e9e1; border-radius:4px; padding:3px; }
-    .view-button { border:0; padding:8px 12px; font-size:11px; color:#6b786d; background:transparent; border-radius:3px; }
-    .view-button[aria-pressed=true] { background:#fff; color:var(--green); box-shadow:0 1px 3px #233a3009; }
+    .toolbar { display:flex; justify-content:flex-end; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:22px; }
+    .export-controls { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; max-width:100%; gap:8px; }
     .action { display:inline-flex; gap:8px; align-items:center; justify-content:center; border:1px solid #c9d3c8; padding:11px 15px; border-radius:3px; color:var(--green); background:transparent; font-size:12px; font-weight:600; transition:background 150ms; }
     .action:hover { background:#e8ede5; }
     .action.primary { background:var(--green); color:#fff; border-color:var(--green); }
@@ -61,8 +58,6 @@
     .stage { padding:24px; min-height:700px; background-color:#e8ece4; background-image:radial-gradient(#bac6b880 .7px,transparent .7px); background-size:10px 10px; border:1px solid #d9e0d5; }
     .letter-wrap { max-width:600px; width:100%; margin:auto; background:#fff; box-shadow:0 8px 28px #30482e12; transition:max-width 180ms ease-out; }
     iframe { display:block; border:0; width:100%; min-height:300px; background:#fff; }
-    .subjectline { width:100%; max-width:600px; margin:0 auto 18px; padding-bottom:12px; border-bottom:1px solid #cfd9c9; color:#445b4b; font-size:12px; overflow-wrap:anywhere; }
-    .subjectline span { color:#788576; margin-right:8px; }
     .below-preview { max-width:600px; margin:16px auto 0; color:#6f7b70; font-size:11px; line-height:1.7; }
     .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:5; max-width:min(600px,calc(100% - 32px)); padding:14px 20px; color:#fff; background:#223e30; border:1px solid #41614b; border-radius:4px; box-shadow:0 6px 30px #20372d26; font-size:13px; }
     .toast.error { background:#803f35; }
@@ -75,14 +70,15 @@
     .small-button { padding:5px 0; border:0; background:transparent; color:#6b7d6e; font-size:11px; text-decoration:underline; }
     @media (max-width:1150px) { .workspace { grid-template-columns:310px minmax(0,1fr); } .main { padding:24px 20px 40px; } .stage { padding:16px; } .toolbar { gap:10px; } }
     @media (max-width:820px) { .topbar { padding:16px 20px; position:static; } .workspace { grid-template-columns:1fr; } .editor { border-right:0; border-bottom:1px solid var(--line); padding:24px 20px; position:static; max-height:none; overflow:visible; } .tabs { margin-left:-20px; margin-right:-20px; padding-left:20px; } .main { padding:24px 12px 32px; } .stage { padding:12px 0; min-height:400px; } .toolbar { justify-content:center; } .preview-meta { padding:0 8px; } .field-row { grid-template-columns:1fr 1fr; } .toplinks { gap:16px; } }
+    @media (max-width:480px) { .topbar { flex-wrap:wrap; gap:12px; } }
     @media (max-width:380px) { .action { padding:10px; font-size:11px; } }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; } }
   
     .edition { color:var(--muted); font:14px/1.3 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; letter-spacing:0; margin-left:8px; }
-    .preview-meta,.subjectline,.letter-wrap { max-width:800px; }
-    .letter-wrap { min-width:400px; }
-    .stage { overflow-x:auto; }
-    .letter-wrap #preview { display:block; width:100%; min-height:0; background:#fff; }
+    .preview-meta,.letter-wrap { max-width:640px; }
+    .letter-wrap { min-width:0; overflow:hidden; position:relative; }
+    .stage { min-width:0; min-height:0; overflow:hidden; }
+    .letter-wrap #preview { display:block; width:640px; min-width:640px; min-height:0; background:#fff; transform-origin:top left; }
     .editor textarea { min-height:140px; line-height:1.55; }
     .editor textarea.short { min-height:76px; }
     .editor textarea.medium { min-height:110px; }
@@ -92,7 +88,6 @@
     .fixed-art { margin-top:24px; padding-top:16px; border-top:1px solid var(--line); }
     .reset-button { margin-top:16px; }
     .action:disabled { cursor:not-allowed; opacity:.55; }
-    .subjectline { overflow-wrap:anywhere; }
     .toast.error { background:#853a32; }
     @media (max-width:820px) { .brand-name { font-size:25px; } .edition { font-size:12px; } .stage { padding:12px 0; } .toolbar { justify-content:flex-start; } }
 </style>
@@ -106,77 +101,59 @@
     <nav class="toplinks" aria-label="Помощь"><button type="button" id="help">Как отправить</button></nav>
   </header>
   <main class="workspace">
-    <section class="editor" aria-labelledby="editor-title">
+    <section class="editor" aria-label="Редактор письма">
       <p class="step">01 / Содержание</p>
-      <h1 id="editor-title">Ваши слова.<br>Готовое письмо.</h1>
-      <p class="lead">Заполните текст и добавьте ссылку на доску. Оформление уже настроено.</p>
-      <label class="label" for="subject">Тема письма</label>
-      <input id="subject" data-field="subject" type="text" maxlength="250" aria-describedby="subject-hint">
-      <span class="hint" id="subject-hint">Перенесите тему в Outlook отдельно.</span>
+      <p class="lead">Заполните текстовые поля или оставьте текст как есть и добавьте ссылку в кнопку</p>
       <label class="label" for="title">Заголовок</label>
       <textarea id="title" data-field="title" rows="2" maxlength="1000" class="short"></textarea>
       <label class="label" for="intro">Основной текст</label>
-      <textarea id="intro" data-field="intro" rows="5" maxlength="12000"></textarea>
-      <label class="label" for="instructions">Приглашение добавить темы</label>
-      <textarea id="instructions" data-field="instructions" rows="3" maxlength="6000" class="medium"></textarea>
+      <textarea id="intro" data-field="intro" rows="8" maxlength="20000"></textarea>
       <div class="field-group">
-        <p class="group-title">Кнопка на доске</p>
         <label class="label" for="buttonUrl">Ссылка для кнопки</label>
         <input id="buttonUrl" data-field="buttonUrl" type="url" maxlength="4000" placeholder="https://…" aria-describedby="button-hint" spellcheck="false" autocomplete="url">
-        <span class="hint" id="button-hint">Полный адрес с https:// или http://. Пустое поле оставляет заглушку #.</span>
+        <span class="hint" id="button-hint">Вставляйте полный адрес включая https:// или http://</span>
       </div>
       <div class="field-group">
-        <p class="group-title">Завершение письма</p>
-        <label class="label" for="duration">Текст о длительности встречи</label>
+        <label class="label" for="duration">Текст в футере</label>
         <textarea id="duration" data-field="duration" rows="3" maxlength="6000" class="medium"></textarea>
-        <label class="label" for="footer">Подпись внизу</label>
-        <textarea id="footer" data-field="footer" rows="2" maxlength="2000" class="short"></textarea>
       </div>
-      <p class="hint fixed-art">Текст на шапке, стикерах, кнопке и картинке с датой — часть изображений. Эти картинки сохраняются из вашего макета.</p>
       <button class="small-button reset-button" id="reset" type="button">Вернуть исходный текст</button>
       <button class="small-button" id="undo-reset" type="button" hidden>Отменить сброс</button>
-      <p class="privacy"><span class="save-dot" aria-hidden="true"></span><span id="save-status" role="status">Черновик хранится в этом браузере</span></p>
+      <span id="save-status" role="status" hidden></span>
     </section>
     <section class="main" aria-label="Предпросмотр и экспорт">
       <div class="toolbar">
-        <div class="view-controls" aria-label="Режим просмотра">
-          <button class="view-button" type="button" id="desktop" aria-pressed="true">Компьютер</button>
-          <button class="view-button" type="button" id="mobile" aria-pressed="false">Телефон</button>
-        </div>
         <div class="export-controls">
           <button class="action" id="download" type="button">Скачать HTML ↓</button>
           <button class="action primary" id="copy" type="button">Скопировать для Outlook ↗</button>
         </div>
       </div>
-      <div class="preview-meta"><span>02 / Ваше письмо</span><span id="size">400–800 px</span></div>
+      <div class="preview-meta"><span>02 / Ваше письмо</span><span id="size">640 px</span></div>
       <div class="stage">
-        <p class="subjectline"><span>Тема</span><strong id="subject-preview"></strong></p>
         <div class="letter-wrap" id="letter-wrap"><div id="preview" role="region" aria-label="Предпросмотр приглашения на ретро" tabindex="-1"></div></div>
       </div>
-      <p class="below-preview">Для отправки из Outlook письмо копируется с фиксированной шириной 800 px. Вставьте его в новое письмо через ⌘V или Ctrl+V. После обновления редактора создайте новое тестовое письмо.</p>
     </section>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   <dialog id="guide" aria-labelledby="guide-title">
     <h2 id="guide-title">Из редактора — в Outlook</h2>
     <ol><li>Измените текст в полях и вставьте ссылку для кнопки.</li><li>Нажмите «Скопировать для Outlook».</li><li>Откройте новое письмо и вставьте через ⌘V на Mac или Ctrl+V на Windows. При необходимости выберите «Сохранить исходное форматирование».</li><li>Добавьте тему и получателей. Сначала отправьте тест себе.</li></ol>
-    <p>Кнопка копирует письмо с оформлением. Скачанный HTML можно импортировать в сервис рассылок или HTML-редактор. Вставка кода в Outlook покажет код обычным текстом.</p>
-    <p>Черновик сохраняется только в этом браузере. Текст не отправляется на сервер. Картинки загружаются с Sendsay и GitHub Pages.</p>
-    <p>В режиме «Телефон» можно посмотреть макет на ширине 400 px. Для копирования и скачивания используется ширина 800 px с явными размерами всех таблиц и картинок. Кнопка остаётся отдельной кликабельной картинкой 340×60 px; колокольчик — 20×20 px. Фон со стикерами собран в обычные изображения: в отправляемом HTML нет фоновых слоёв и VML. После отправки проверьте полученное письмо.</p>
     <button class="action primary" id="close-guide" type="button">Понятно</button>
   </dialog>
-  <script type="application/json" id="email-template">{"defaults":{"subject":"Приглашаем на ретро с «Единым контентом»","title":"Приглашаем на ретро с «Единым контентом».","intro":"Поговорим о том, что волнует в работе всего проекта: от планирования и оценки задач до взаимодействия и подведения итогов.","instructions":"Добавляйте на доску вопросы и идеи, которые хотите обсудить.","duration":"Длительность встречи будет зависеть от количества тем для обсуждения.","footer":"Единый контент · Обсуждаем открыто, меняем вместе","buttonUrl":"#"},"headerAlt":"Единый контент. Командное ретро — 25 ноября. Сделаем нашу работу лучше. Вместе.","dateAlt":"25 ноября, 16:00.","notesAlt":"Что сохраним: процессы и практики, которые помогают достигать результатов и которые нравятся. Что надо изменить: сложности и процессы, которые стоит улучшить. Есть идеи, как это можно решить? Обязательно предложите! О чём договоримся: заполним вместе на встрече — обсудим предложения и договоримся о конкретных действиях.","sources":{"header":"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/header.jpg","date":"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/date%2Dtext.png","bell":"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/bell.png"}}</script>
+  <script type="application/json" id="email-template">{"template":"\u003c!doctype html>\n\u003chtml lang=\"ru\" xmlns:o=\"urn:schemas-microsoft-com:office:office\">\n\n\u003chead>\n  \u003cmeta charset=\"utf-8\">\n  \u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n  \u003cmeta name=\"x-apple-disable-message-reformatting\">\n  \u003ctitle>__RETRO_SUBJECT__\u003c/title>\n  \u003c!--[if gte mso 9]>\u003cxml>\u003co:OfficeDocumentSettings>\u003co:AllowPNG/>\u003co:PixelsPerInch>96\u003c/o:PixelsPerInch>\u003c/o:OfficeDocumentSettings>\u003c/xml>\u003c![endif]-->\n\u003c/head>\n\n\u003cbody style=\"margin:0;padding:0;background-color:#ffffff;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;\">\n  \u003ctable role=\"presentation\" width=\"640\" align=\"center\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"\n    style=\"width:640px;border-collapse:collapse;table-layout:fixed;mso-table-lspace:0pt;mso-table-rspace:0pt;\">\n    \u003ctr>\n      \u003ctd width=\"640\" valign=\"top\" style=\"width:640px;padding:0;font-size:0;line-height:0;vertical-align:top;\">\n        \u003cimg src=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img%2D01/header.png\"\n          width=\"640\" height=\"400\" border=\"0\"\n          alt=\"Единый контент. Командное ретро — 25 ноября. Сделаем нашу работу лучше. Вместе.\"\n          style=\"display:block;width:640px;min-width:640px;max-width:640px;height:400px;border:0;outline:none;text-decoration:none;vertical-align:top;\">\n      \u003c/td>\n    \u003c/tr>\n    \u003ctr>\n      \u003ctd width=\"640\" bgcolor=\"#ffffff\" style=\"width:640px;padding:0;background-color:#ffffff;\">\n        \u003ctable role=\"presentation\" width=\"640\" align=\"left\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"\n          style=\"width:640px;border-collapse:collapse;table-layout:fixed;mso-table-lspace:0pt;mso-table-rspace:0pt;\">\n          \u003ctr>\n            \u003ctd width=\"30\" height=\"47\" bgcolor=\"#ffffff\"\n              style=\"width:30px;height:47px;padding:0;font-size:1px;line-height:47px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n            \u003ctd width=\"580\" height=\"47\" bgcolor=\"#ffffff\"\n              style=\"width:580px;height:47px;padding:0;font-size:1px;line-height:47px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n            \u003ctd width=\"30\" height=\"47\" bgcolor=\"#ffffff\"\n              style=\"width:30px;height:47px;padding:0;font-size:1px;line-height:47px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n          \u003c/tr>\n          \u003ctr>\n            \u003ctd width=\"30\" valign=\"top\" style=\"width:30px;padding:0;font-size:0;line-height:0;vertical-align:top;\">\u003c/td>\n            \u003ctd width=\"580\" valign=\"top\"\n              style=\"width:580px;padding:0;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:700;line-height:22px;mso-line-height-rule:exactly;text-align:left;white-space:normal;word-wrap:break-word;overflow-wrap:break-word;\">\n              \u003cp\n                style=\"margin:0;padding:0;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:700;line-height:22px;mso-line-height-rule:exactly;text-align:left;white-space:normal;word-wrap:break-word;overflow-wrap:break-word;\">\n                \u003cstrong style=\"font-weight:700;\">__RETRO_TITLE__\u003c/strong>\n              \u003c/p>\n            \u003c/td>\n            \u003ctd width=\"30\" valign=\"top\" style=\"width:30px;padding:0;font-size:0;line-height:0;vertical-align:top;\">\u003c/td>\n          \u003c/tr>\n          \u003ctr>\n            \u003ctd width=\"30\" height=\"22\" bgcolor=\"#ffffff\"\n              style=\"width:30px;height:22px;padding:0;font-size:1px;line-height:22px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n            \u003ctd width=\"580\" height=\"22\" bgcolor=\"#ffffff\"\n              style=\"width:580px;height:22px;padding:0;font-size:1px;line-height:22px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n            \u003ctd width=\"30\" height=\"22\" bgcolor=\"#ffffff\"\n              style=\"width:30px;height:22px;padding:0;font-size:1px;line-height:22px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n          \u003c/tr>\n        \u003c/table>\n      \u003c/td>\n    \u003c/tr>\n    \u003ctr>\n      \u003ctd width=\"640\" bgcolor=\"#ffffff\" style=\"width:640px;padding:0;background-color:#ffffff;\">\n        \u003ctable role=\"presentation\" width=\"640\" align=\"left\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"\n          style=\"width:640px;border-collapse:collapse;table-layout:fixed;mso-table-lspace:0pt;mso-table-rspace:0pt;\">\n          \u003ctr>\n            \u003ctd width=\"30\" valign=\"top\" style=\"width:30px;padding:0;font-size:0;line-height:0;vertical-align:top;\">\u003c/td>\n            \u003ctd width=\"580\" valign=\"top\"\n              style=\"width:580px;padding:0;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:400;line-height:22px;mso-line-height-rule:exactly;text-align:left;white-space:normal;word-wrap:break-word;overflow-wrap:break-word;\">\n              \u003cp\n                style=\"margin:0;padding:0;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:400;line-height:22px;mso-line-height-rule:exactly;text-align:left;white-space:normal;word-wrap:break-word;overflow-wrap:break-word;\">__RETRO_BODY__\u003c/p>\n            \u003c/td>\n            \u003ctd width=\"30\" valign=\"top\" style=\"width:30px;padding:0;font-size:0;line-height:0;vertical-align:top;\">\u003c/td>\n          \u003c/tr>\n          \u003ctr>\n            \u003ctd width=\"30\" height=\"47\" bgcolor=\"#ffffff\"\n              style=\"width:30px;height:47px;padding:0;font-size:1px;line-height:47px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n            \u003ctd width=\"580\" height=\"47\" bgcolor=\"#ffffff\"\n              style=\"width:580px;height:47px;padding:0;font-size:1px;line-height:47px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n            \u003ctd width=\"30\" height=\"47\" bgcolor=\"#ffffff\"\n              style=\"width:30px;height:47px;padding:0;font-size:1px;line-height:47px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n          \u003c/tr>\n        \u003c/table>\n      \u003c/td>\n    \u003c/tr>\n    \u003ctr>\n      \u003ctd width=\"640\" valign=\"top\" style=\"width:640px;padding:0;font-size:0;line-height:0;vertical-align:top;\">\n        \u003ca href=\"__RETRO_URL__\"\n          style=\"text-decoration:none;\">\n          \u003cimg src=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img%2D01/bg%2Dmain.png\"\n            width=\"640\" height=\"830\" border=\"0\" alt=\"Перейти на доску ретро. Что сохраним: процессы и практики, которые помогают достигать результатов и которые нравятся. Что надо изменить: сложности и процессы, которые стоит улучшить. Есть идеи, как это можно решить? Обязательно предложите! О чём договоримся: заполним вместе на встрече — обсудим предложения и договоримся о конкретных действиях.\"\n            style=\"display:block;width:640px;min-width:640px;max-width:640px;height:830px;border:0;outline:none;text-decoration:none;vertical-align:top;\">\u003c/a>\n      \u003c/td>\n    \u003c/tr>\n    \u003ctr>\n      \u003ctd width=\"640\" height=\"47\" bgcolor=\"#ffffff\"\n        style=\"width:640px;height:47px;padding:0;font-size:1px;line-height:47px;mso-line-height-rule:exactly;\">\n        &nbsp;\u003c/td>\n    \u003c/tr>\n    \u003ctr>\n      \u003ctd width=\"640\" valign=\"top\" style=\"width:640px;padding:0;font-size:0;line-height:0;vertical-align:top;\">\n        \u003cimg\n          src=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img%2D01/date%2Dtext%2D01.png\"\n          width=\"640\" height=\"104\" border=\"0\" alt=\"25 ноября, 16:00.\"\n          style=\"display:block;width:640px;min-width:640px;max-width:640px;height:104px;border:0;outline:none;text-decoration:none;vertical-align:top;\">\n      \u003c/td>\n    \u003c/tr>\n    \u003ctr>\n      \u003ctd width=\"640\" height=\"26\" bgcolor=\"#ffffff\"\n        style=\"width:640px;height:26px;padding:0;font-size:1px;line-height:26px;mso-line-height-rule:exactly;\">\n        &nbsp;\u003c/td>\n    \u003c/tr>\n    \u003ctr>\n      \u003ctd width=\"640\" valign=\"top\" style=\"width:640px;padding:0;font-size:0;line-height:0;vertical-align:top;\">\n        \u003cimg src=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img%2D01/divider.png\"\n          width=\"640\" height=\"20\" border=\"0\" alt=\"\" role=\"presentation\"\n          style=\"display:block;width:640px;min-width:640px;max-width:640px;height:20px;border:0;outline:none;text-decoration:none;vertical-align:top;\">\n      \u003c/td>\n    \u003c/tr>\n    \u003ctr>\n      \u003ctd width=\"640\" bgcolor=\"#ffffff\" style=\"width:640px;padding:0;background-color:#ffffff;\">\n        \u003ctable role=\"presentation\" width=\"640\" align=\"left\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"\n          style=\"width:640px;border-collapse:collapse;table-layout:fixed;mso-table-lspace:0pt;mso-table-rspace:0pt;\">\n          \u003ctr>\n            \u003ctd width=\"30\" height=\"30\" bgcolor=\"#ffffff\"\n              style=\"width:30px;height:30px;padding:0;font-size:1px;line-height:30px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n            \u003ctd width=\"580\" height=\"30\" bgcolor=\"#ffffff\"\n              style=\"width:580px;height:30px;padding:0;font-size:1px;line-height:30px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n            \u003ctd width=\"30\" height=\"30\" bgcolor=\"#ffffff\"\n              style=\"width:30px;height:30px;padding:0;font-size:1px;line-height:30px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n          \u003c/tr>\n          \u003ctr>\n            \u003ctd width=\"30\" valign=\"top\" style=\"width:30px;padding:0;font-size:0;line-height:0;vertical-align:top;\">\u003c/td>\n            \u003ctd width=\"580\" valign=\"top\"\n              style=\"width:580px;padding:0;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:400;line-height:22px;mso-line-height-rule:exactly;text-align:center;white-space:normal;word-wrap:break-word;overflow-wrap:break-word;\">\n              \u003cp\n                style=\"margin:0;padding:0;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:400;line-height:22px;mso-line-height-rule:exactly;text-align:center;white-space:normal;word-wrap:break-word;overflow-wrap:break-word;\">__RETRO_DURATION__\u003c/p>\n            \u003c/td>\n            \u003ctd width=\"30\" valign=\"top\" style=\"width:30px;padding:0;font-size:0;line-height:0;vertical-align:top;\">\u003c/td>\n          \u003c/tr>\n          \u003ctr>\n            \u003ctd width=\"30\" height=\"43\" bgcolor=\"#ffffff\"\n              style=\"width:30px;height:43px;padding:0;font-size:1px;line-height:43px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n            \u003ctd width=\"580\" height=\"43\" bgcolor=\"#ffffff\"\n              style=\"width:580px;height:43px;padding:0;font-size:1px;line-height:43px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n            \u003ctd width=\"30\" height=\"43\" bgcolor=\"#ffffff\"\n              style=\"width:30px;height:43px;padding:0;font-size:1px;line-height:43px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n          \u003c/tr>\n        \u003c/table>\n      \u003c/td>\n    \u003c/tr>\n    \u003ctr>\n      \u003ctd width=\"640\" style=\"width:640px;padding:0;\">\n        \u003ctable role=\"presentation\" width=\"640\" align=\"left\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"\n          style=\"width:640px;border-collapse:collapse;table-layout:fixed;mso-table-lspace:0pt;mso-table-rspace:0pt;\">\n          \u003ctr>\n            \u003ctd width=\"640\" valign=\"top\" style=\"width:640px;padding:0;font-size:0;line-height:0;vertical-align:top;\">\n              \u003cimg\n                src=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img%2D01/footer.png\"\n                width=\"640\" height=\"74\" border=\"0\" alt=\"Единый контент · Обсуждаем открыто, меняем вместе\"\n                style=\"display:block;width:640px;min-width:640px;max-width:640px;height:74px;border:0;outline:none;text-decoration:none;vertical-align:top;\">\n            \u003c/td>\n          \u003c/tr>\n          \u003ctr>\n            \u003ctd width=\"640\" height=\"30\"\n              style=\"width:640px;height:30px;padding:0;font-size:1px;line-height:30px;mso-line-height-rule:exactly;\">\n              &nbsp;\u003c/td>\n          \u003c/tr>\n        \u003c/table>\n      \u003c/td>\n    \u003c/tr>\n  \u003c/table>\n\u003c/body>\n\n\u003c/html>","defaults":{"subject":"Приглашаем на ретро с «Единым контентом»","title":"Приглашаем на ретро с «Единым контентом».","intro":"Поговорим о том, что волнует в работе всего проекта: от планирования и оценки задач до взаимодействия и подведения итогов.\n\nДобавляйте на доску вопросы и идеи, которые хотите обсудить.","duration":"Длительность встречи будет зависеть от количества тем для обсуждения.","buttonUrl":"https://easyretro.io/publicboard/WlMEtMgYYTZ6H9ptPh1VQkUasNC2/ec734e7f-fdf4-499a-a776-502fef632971"},"width":640,"headerAlt":"Единый контент. Командное ретро — 25 ноября. Сделаем нашу работу лучше. Вместе.","boardAlt":"Перейти на доску ретро. Что сохраним: процессы и практики, которые помогают достигать результатов и которые нравятся. Что надо изменить: сложности и процессы, которые стоит улучшить. Есть идеи, как это можно решить? Обязательно предложите! О чём договоримся: заполним вместе на встрече — обсудим предложения и договоримся о конкретных действиях.","dateAlt":"25 ноября, 16:00.","footerAlt":"Единый контент · Обсуждаем открыто, меняем вместе"}</script>
   <script id="mail-engine">
 'use strict';
 function createRetroEngine(config) {
-  const defaults = Object.freeze({...config.defaults});
-  const limits = {subject:250,title:1000,intro:12000,instructions:6000,duration:6000,footer:2000,buttonUrl:4000};
-  const sources = config.sources;
-  const assetBase = 'https://coopersino.github.io/mail-studio-light/retro/';
+  const defaults=Object.freeze({...config.defaults});
+  const limits={subject:250,title:1000,intro:20000,duration:6000,buttonUrl:4000};
   function normalize(input) {
-    const result = {...defaults};
-    if (input && typeof input === 'object' && !Array.isArray(input)) {
-      for (const key of Object.keys(defaults)) if (typeof input[key] === 'string') result[key] = input[key].slice(0,limits[key]);
+    const result={...defaults};
+    if(input&&typeof input==='object'&&!Array.isArray(input)) {
+      for(const key of Object.keys(defaults)) if(typeof input[key]==='string') result[key]=input[key].slice(0,limits[key]);
+      // Merge the previous two fields when restoring an older draft.
+      if(typeof input.intro==='string' && typeof input.instructions==='string') {
+        result.intro=[input.intro.slice(0,12000),input.instructions.slice(0,6000)].filter(value=>value.trim()).join('\n\n');
+      }
     }
     return result;
   }
@@ -184,82 +161,35 @@ function createRetroEngine(config) {
     return String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   }
   function safeUrl(value) {
-    const text = String(value || '').trim();
-    if (!text || text === '#') return '#';
-    try { const url = new URL(text); return ['https:','http:'].includes(url.protocol) && url.hostname ? url.href : null; }
-    catch (_) { return null; }
+    const text=String(value||'').trim();
+    if(!text||text==='#') return '#';
+    try { const url=new URL(text);return ['https:','http:'].includes(url.protocol)&&url.hostname?url.href:null; }
+    catch(_) { return null; }
   }
   function formatText(value) {
-    // Nonbreaking spaces and very long pasted tokens must not expand a Word table.
-    return value.trim().replace(/[\u00a0\u202f]/g,' ').replace(/\r\n?/g,'\n').split(/(\s+)/).map(token=>{
-      const chars=Array.from(token);
-      if (/^\s*$/.test(token)) return escapeHtml(token);
-      const chunks=[];
-      for(let i=0;i<chars.length;i+=24) chunks.push(escapeHtml(chars.slice(i,i+24).join('')));
-      return chunks.join('&#8203;');
+    return value.trim().replace(/\r\n?/g,'\n').split(/(\s+)/).map(token=>{
+      if(/^\s*$/.test(token)) return escapeHtml(token);
+      const chars=Array.from(token),parts=[];
+      for(let i=0;i<chars.length;i+=24) parts.push(escapeHtml(chars.slice(i,i+24).join('')));
+      return parts.join('&#8203;');
     }).join('').replace(/\n/g,'<br>');
   }
-  const tableStyle = 'border-collapse:collapse;table-layout:fixed;mso-table-lspace:0pt;mso-table-rspace:0pt;';
-  function table(width,rows,align='left') {
-    return `<table role="presentation" width="${width}" align="${align}" cellspacing="0" cellpadding="0" border="0" style="width:${width}px;${tableStyle}">${rows}</table>`;
-  }
-  function cell(width,content,extra='') {
-    return `<td width="${width}" valign="top" style="width:${width}px;padding:0;font-size:0;line-height:0;vertical-align:top;${extra}">${content}</td>`;
-  }
-  function img(src,width,height,alt='',decorative=false) {
-    return `<img src="${escapeHtml(src)}" width="${width}" height="${height}" border="0" alt="${escapeHtml(alt)}"${decorative?' role="presentation"':''} style="display:block;width:${width}px;min-width:${width}px;max-width:${width}px;height:${height}px;border:0;outline:none;text-decoration:none;vertical-align:top;">`;
-  }
-  function generate(input,requestedWidth=800) {
+  function generate(input) {
     const state=normalize(input);
-    const width=Math.min(800,Math.max(400,Math.round(Number(requestedWidth)||800)));
-    const contentWidth=width-60;
     const href=safeUrl(state.buttonUrl);
-    function spacer(height,color='#ffffff') {
-      return `<tr><td width="${width}" height="${height}" bgcolor="${color}" style="width:${width}px;height:${height}px;padding:0;font-size:1px;line-height:${height}px;mso-line-height-rule:exactly;">&nbsp;</td></tr>`;
-    }
-    function textBlock(value,top,bottom,{bold=false,center=false,footer=false}={}) {
-      if(!value.trim()) return '';
-      const color=footer?'#7D838A':'#333F48';
-      const size=footer?12:19;
-      const line=footer?14:22;
-      const bg=footer?'#f2f4f7':'#ffffff';
-      const css=`color:${color};font-family:Helvetica,Arial,sans-serif;font-size:${size}px;font-weight:${bold?700:400};line-height:${line}px;mso-line-height-rule:exactly;text-align:${center?'center':'left'};white-space:normal;word-wrap:break-word;overflow-wrap:break-word;`;
-      const text=formatText(value);
-      const p=`<p style="margin:0;padding:0;${css}">${bold?'<strong style="font-weight:700;">'+text+'</strong>':text}</p>`;
-      const lineRow=`<tr>${cell(30,'') }<td width="${contentWidth}" valign="top" style="width:${contentWidth}px;padding:0;${css}">${p}</td>${cell(30,'')}</tr>`;
-      function textSpacer(height) {
-        return '<tr>'+[30,contentWidth,30].map(column=>`<td width="${column}" height="${height}" bgcolor="${bg}" style="width:${column}px;height:${height}px;padding:0;font-size:1px;line-height:${height}px;mso-line-height-rule:exactly;">&nbsp;</td>`).join('')+'</tr>';
-      }
-      const rows=(top?textSpacer(top):'')+lineRow+(bottom?textSpacer(bottom):'');
-      return `<tr><td width="${width}" bgcolor="${bg}" style="width:${width}px;padding:0;background-color:${bg};">${table(width,rows)}</td></tr>`;
-    }
-    function imageRow(src,height,alt='',decorative=false) {
-      return `<tr>${cell(width,img(src,width,height,alt,decorative))}</tr>`;
-    }
-    const side=(width-340)/2;
-    const boardButton=img(assetBase+'board-button-v1.jpg',340,60,'Перейти на доску');
-    const buttonCells=cell(side,img(assetBase+'board-left-v1.jpg',side,60,'',true))+
-      cell(340,`<a href="${escapeHtml(href||'#')}" style="text-decoration:none;">${boardButton}</a>`)+
-      cell(side,img(assetBase+'board-right-v1.jpg',side,60,'',true));
-    const board = imageRow(assetBase+'board-top-v1.jpg',60,'',true)+
-      `<tr>${cell(width,table(width,'<tr>'+buttonCells+'</tr>'))}</tr>`+
-      imageRow(assetBase+'board-gap-v1.jpg',60,'',true)+
-      imageRow(assetBase+'board-notes-v1.jpg',Math.round(width*1548/1600),config.notesAlt)+
-      imageRow(assetBase+'board-bottom-v1.jpg',30,'',true);
-    const lineSide=(contentWidth-60)/2;
-    const rule=table(lineSide,`<tr><td width="${lineSide}" height="9" style="width:${lineSide}px;height:9px;padding:0;font-size:1px;line-height:9px;mso-line-height-rule:exactly;">&nbsp;</td></tr><tr><td width="${lineSide}" height="10" style="width:${lineSide}px;height:10px;padding:0;border-top:1px solid #D0D7DD;font-size:1px;line-height:10px;mso-line-height-rule:exactly;">&nbsp;</td></tr>`);
-    const bell=table(60,`<tr>${cell(20,'')}${cell(20,img(sources.bell,20,20,'',true))}${cell(20,'')}</tr>`);
-    const divider=`<tr>${cell(width,table(width,'<tr>'+cell(30,'')+cell(lineSide,rule)+cell(60,bell)+cell(lineSide,rule)+cell(30,'')+'</tr>'))}</tr>`;
-    const rows=imageRow(sources.header,Math.round(width*1000/1600),config.headerAlt)+
-      textBlock(state.title,32,22,{bold:true})+textBlock(state.intro,0,22)+textBlock(state.instructions,0,22)+
-      board+spacer(30)+imageRow(sources.date,Math.round(width*208/1600),config.dateAlt)+spacer(26)+divider+
-      textBlock(state.duration,30,43,{center:true})+textBlock(state.footer,30,30,{center:true,footer:true});
-    const fragment=table(width,rows,'center');
-    const html=`<!doctype html>\n<html lang="ru" xmlns:o="urn:schemas-microsoft-com:office:office"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><title>${escapeHtml(state.subject.trim()||'Приглашение на ретро')}</title><!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--></head><body style="margin:0;padding:0;background-color:#ffffff;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">${fragment}</body></html>`;
-    const text=[config.headerAlt,state.title,state.intro,state.instructions,'Перейти на доску: '+(href||'#'),config.notesAlt,config.dateAlt,state.duration,state.footer].filter(value=>value.trim()).join('\n\n');
-    return {html,fragment,text,valid:href!==null,width,compatibilityVersion:2};
+    const values={
+      SUBJECT:escapeHtml(state.subject.trim()||'Приглашение на ретро'),
+      TITLE:formatText(state.title),
+      BODY:formatText(state.intro),
+      DURATION:formatText(state.duration),
+      URL:escapeHtml(href||'#')
+    };
+    const html=config.template.replace(/__RETRO_(SUBJECT|TITLE|BODY|DURATION|URL)__/g,(_,key)=>values[key]);
+    const fragment=html.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)[1].trim();
+    const text=[config.headerAlt,state.title,state.intro,config.boardAlt,'Ссылка на доску: '+(href||'#'),config.dateAlt,state.duration,config.footerAlt].filter(value=>value.trim()).join('\n\n');
+    return {html,fragment,text,valid:href!==null,width:640,compatibilityVersion:3};
   }
-  return Object.freeze({defaults,normalize,safeUrl,generate});
+  return Object.freeze({defaults,normalize,safeUrl,generate,width:640});
 }
 
   </script>
@@ -267,21 +197,20 @@ function createRetroEngine(config) {
     'use strict';
     (() => {
       const engine = createRetroEngine(JSON.parse(document.getElementById('email-template').textContent));
-      const storageKey = 'mail-studio-retro.draft.v1';
+      const storageKey = 'mail-studio-retro.640.draft.v1';
       const fields = [...document.querySelectorAll('[data-field]')];
       const frame = document.getElementById('preview');
-      const wrap = document.getElementById('letter-wrap');
+      const previewWrap = document.getElementById('letter-wrap');
       const saveStatus = document.getElementById('save-status');
       const urlField = document.getElementById('buttonUrl');
       const urlHint = document.getElementById('button-hint');
       const originalHint = urlHint.textContent;
       let state = {...engine.defaults};
       let previousState = null;
-      let view = 'desktop';
       let toastTimer, renderTimer, saveTimer;
       try {
         const stored = JSON.parse(localStorage.getItem(storageKey) || 'null');
-        if (stored && stored.version === 1) state = engine.normalize(stored.data);
+        if (stored && [1,2].includes(stored.version)) state = engine.normalize(stored.data);
       } catch (_) { saveStatus.textContent = 'Сохранение черновика недоступно. Скачайте HTML, чтобы сохранить результат.'; }
       function notify(message,error=false) {
         const toast = document.getElementById('toast');
@@ -295,22 +224,33 @@ function createRetroEngine(config) {
       function saveDraft() {
         clearTimeout(saveTimer);
         try {
-          localStorage.setItem(storageKey,JSON.stringify({version:1,data:state}));
+          localStorage.setItem(storageKey,JSON.stringify({version:2,data:state}));
           saveStatus.textContent = 'Черновик сохранён в этом браузере';
         } catch (_) { saveStatus.textContent = 'Не удалось сохранить черновик. Скачайте HTML, чтобы сохранить результат.'; }
       }
+      let lastPreviewWidth=-1,lastPreviewHeight=-1;
       function resizeFrame() {
         const table=frame.firstElementChild;
         if(!table) return;
-        document.getElementById('size').textContent=Math.round(table.getBoundingClientRect().width)+' px · '+(view==='mobile'?'Телефон':'Компьютер');
+        const availableWidth=previewWrap.clientWidth || engine.width;
+        const naturalHeight=frame.offsetHeight;
+        if(availableWidth===lastPreviewWidth && naturalHeight===lastPreviewHeight) return;
+        lastPreviewWidth=availableWidth;
+        lastPreviewHeight=naturalHeight;
+        const scale=Math.min(1,availableWidth/engine.width);
+        frame.style.transform=scale<1?'scale('+scale+')':'none';
+        previewWrap.style.height=Math.ceil(naturalHeight*scale)+'px';
+        document.getElementById('size').textContent=engine.width+' px';
       }
       frame.addEventListener('click',event=>{if(event.target.closest('a')) event.preventDefault();});
-      if(window.ResizeObserver) new ResizeObserver(resizeFrame).observe(frame);
+      if(window.ResizeObserver) {
+        const previewObserver=new ResizeObserver(resizeFrame);
+        previewObserver.observe(frame);
+        previewObserver.observe(previewWrap);
+      }
       function update() {
         clearTimeout(renderTimer);
-        const previewWidth = view==='mobile' ? 400 : Math.max(400,Math.min(800,Math.floor(wrap.getBoundingClientRect().width/2)*2));
-        const email = engine.generate(state,previewWidth);
-        document.getElementById('subject-preview').textContent = state.subject.trim() || 'Без темы';
+        const email = engine.generate(state);
         urlField.setAttribute('aria-invalid',String(!email.valid));
         urlHint.classList.toggle('error',!email.valid);
         urlHint.textContent = email.valid ? originalHint : 'Проверьте ссылку: нужен полный адрес с https:// или http://.';
@@ -338,12 +278,6 @@ function createRetroEngine(config) {
         document.getElementById('undo-reset').hidden=true;
         notify('Предыдущий черновик возвращён.');
       });
-      ['desktop','mobile'].forEach(name=>document.getElementById(name).addEventListener('click',()=>{
-        view=name;
-        ['desktop','mobile'].forEach(key=>document.getElementById(key).setAttribute('aria-pressed',String(key===name)));
-        wrap.style.maxWidth=(name==='mobile'?400:800)+'px';
-        update();
-      }));
       function exportEmail() {
         const email=engine.generate(state);
         if (!email.valid) { update();urlField.focus();notify('Исправьте ссылку кнопки перед экспортом.',true);return null; }
