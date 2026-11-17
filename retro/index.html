@@ -302,7 +302,7 @@ function createRetroEngine(config) {
         if (!table) return;
         const height = Math.ceil(table.getBoundingClientRect().height);
         if (height > 0) frame.style.height = height+'px';
-        document.getElementById('size').textContent = Math.round(frame.getBoundingClientRect().width)+' px · '+(view==='mobile'?'Телефон':'Компьютер');
+        document.getElementById('size').textContent = Math.round(table.getBoundingClientRect().width)+' px · '+(view==='mobile'?'Телефон':'Компьютер');
       }
       frame.addEventListener('load',()=>{
         if (bodyObserver) bodyObserver.disconnect();
