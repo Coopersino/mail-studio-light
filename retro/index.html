@@ -82,7 +82,7 @@
     .preview-meta,.subjectline,.letter-wrap { max-width:800px; }
     .letter-wrap { min-width:400px; }
     .stage { overflow-x:auto; }
-    .letter-wrap iframe { display:block; width:100%; height:1600px; min-height:0; border:0; background:#fff; }
+    .letter-wrap #preview { display:block; width:100%; min-height:0; background:#fff; }
     .editor textarea { min-height:140px; line-height:1.55; }
     .editor textarea.short { min-height:76px; }
     .editor textarea.medium { min-height:110px; }
@@ -151,7 +151,7 @@
       <div class="preview-meta"><span>02 / Ваше письмо</span><span id="size">400–800 px</span></div>
       <div class="stage">
         <p class="subjectline"><span>Тема</span><strong id="subject-preview"></strong></p>
-        <div class="letter-wrap" id="letter-wrap"><iframe id="preview" title="Предпросмотр приглашения на ретро" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe></div>
+        <div class="letter-wrap" id="letter-wrap"><div id="preview" role="region" aria-label="Предпросмотр приглашения на ретро" tabindex="-1"></div></div>
       </div>
       <p class="below-preview">Для отправки из Outlook письмо копируется с фиксированной шириной 800 px. Вставьте его в новое письмо через ⌘V или Ctrl+V. После обновления редактора создайте новое тестовое письмо.</p>
     </section>
@@ -275,7 +275,7 @@ function createRetroEngine(config) {
       let state = {...engine.defaults};
       let previousState = null;
       let view = 'desktop';
-      let toastTimer, renderTimer, saveTimer, bodyObserver;
+      let toastTimer, renderTimer, saveTimer;
       try {
         const stored = JSON.parse(localStorage.getItem(storageKey) || 'null');
         if (stored && stored.version === 1) state = engine.normalize(stored.data);
@@ -297,28 +297,12 @@ function createRetroEngine(config) {
         } catch (_) { saveStatus.textContent = 'Не удалось сохранить черновик. Скачайте HTML, чтобы сохранить результат.'; }
       }
       function resizeFrame() {
-        const doc = frame.contentDocument;
-        const table = doc && doc.body && doc.body.firstElementChild;
-        if (!table) return;
-        const height = Math.ceil(table.getBoundingClientRect().height);
-        if (height > 0) frame.style.height = height+'px';
-        document.getElementById('size').textContent = Math.round(table.getBoundingClientRect().width)+' px · '+(view==='mobile'?'Телефон':'Компьютер');
+        const table=frame.firstElementChild;
+        if(!table) return;
+        document.getElementById('size').textContent=Math.round(table.getBoundingClientRect().width)+' px · '+(view==='mobile'?'Телефон':'Компьютер');
       }
-      frame.addEventListener('load',()=>{
-        if (bodyObserver) bodyObserver.disconnect();
-        const doc = frame.contentDocument;
-        if (!doc || !doc.body) return;
-        doc.addEventListener('click',event=>event.preventDefault());
-        doc.querySelectorAll('img').forEach(img=>{
-          img.addEventListener('load',resizeFrame);
-          img.addEventListener('error',resizeFrame);
-        });
-        if (window.ResizeObserver && doc.body.firstElementChild) {
-          bodyObserver = new ResizeObserver(resizeFrame);
-          bodyObserver.observe(doc.body.firstElementChild);
-        }
-        resizeFrame();
-      });
+      frame.addEventListener('click',event=>{if(event.target.closest('a')) event.preventDefault();});
+      if(window.ResizeObserver) new ResizeObserver(resizeFrame).observe(frame);
       function update() {
         clearTimeout(renderTimer);
         const previewWidth = view==='mobile' ? 400 : Math.max(400,Math.min(800,Math.floor(wrap.getBoundingClientRect().width/2)*2));
@@ -329,7 +313,8 @@ function createRetroEngine(config) {
         urlHint.textContent = email.valid ? originalHint : 'Проверьте ссылку: нужен полный адрес с https:// или http://.';
         document.getElementById('copy').disabled = !email.valid;
         document.getElementById('download').disabled = !email.valid;
-        frame.srcdoc = email.html;
+        frame.innerHTML = email.fragment;
+        resizeFrame();
       }
       fields.forEach(field=>field.addEventListener('input',()=>{
         state[field.dataset.field]=field.value;
@@ -376,11 +361,11 @@ function createRetroEngine(config) {
           }
           if (!copied) {
             // Render synchronously so the manual-copy selection never contains an older edit.
-            const doc=frame.contentDocument;
-            if (doc && doc.body) {
-              doc.open();doc.write(email.html);doc.close();
-              const selection=frame.contentWindow.getSelection();
-              const range=doc.createRange();range.selectNodeContents(doc.body);
+            const doc=document;
+            if (frame) {
+              frame.innerHTML=email.fragment;
+              const selection=window.getSelection();
+              const range=doc.createRange();range.selectNodeContents(frame);
               selection.removeAllRanges();selection.addRange(range);
               const onCopy=event=>{
                 if (!event.clipboardData) return;
