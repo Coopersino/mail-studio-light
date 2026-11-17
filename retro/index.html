@@ -153,7 +153,7 @@
         <p class="subjectline"><span>Тема</span><strong id="subject-preview"></strong></p>
         <div class="letter-wrap" id="letter-wrap"><iframe id="preview" title="Предпросмотр приглашения на ретро" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe></div>
       </div>
-      <p class="below-preview">Скопируйте письмо и вставьте в Outlook через ⌘V или Ctrl+V. Для проверки оформления сначала отправьте письмо себе.</p>
+      <p class="below-preview">Для отправки из Outlook письмо копируется с фиксированной шириной 800 px. Вставьте его в новое письмо через ⌘V или Ctrl+V. После обновления редактора создайте новое тестовое письмо.</p>
     </section>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
@@ -161,53 +161,104 @@
     <h2 id="guide-title">Из редактора — в Outlook</h2>
     <ol><li>Измените текст в полях и вставьте ссылку для кнопки.</li><li>Нажмите «Скопировать для Outlook».</li><li>Откройте новое письмо и вставьте через ⌘V на Mac или Ctrl+V на Windows. При необходимости выберите «Сохранить исходное форматирование».</li><li>Добавьте тему и получателей. Сначала отправьте тест себе.</li></ol>
     <p>Кнопка копирует письмо с оформлением. Скачанный HTML можно импортировать в сервис рассылок или HTML-редактор. Вставка кода в Outlook покажет код обычным текстом.</p>
-    <p>Черновик сохраняется только в этом браузере. Текст не отправляется на сервер. Картинки загружаются с вашего сервера Sendsay.</p>
-    <p>Ширина письма — от 400 до 800 px. Изображения сохраняют пропорции, кнопка и колокольчик имеют фиксированный размер. Outlook может изменить оформление при вставке, поэтому проверяйте полученное письмо.</p>
+    <p>Черновик сохраняется только в этом браузере. Текст не отправляется на сервер. Картинки загружаются с Sendsay и GitHub Pages.</p>
+    <p>В режиме «Телефон» можно посмотреть макет на ширине 400 px. Для копирования и скачивания используется ширина 800 px с явными размерами всех таблиц и картинок. Кнопка остаётся отдельной кликабельной картинкой 340×60 px; колокольчик — 20×20 px. Фон со стикерами собран в обычные изображения: в отправляемом HTML нет фоновых слоёв и VML. После отправки проверьте полученное письмо.</p>
     <button class="action primary" id="close-guide" type="button">Понятно</button>
   </dialog>
-  <script type="application/json" id="email-template">{"template":"\u003c!doctype html>\n\u003chtml lang=\"ru\">\n\n\u003chead>\n  \u003cmeta charset=\"utf-8\">\n  \u003cmeta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n  \u003cmeta name=\"x-apple-disable-message-reformatting\">\n  \u003ctitle>__RETRO_SUBJECT__\u003c/title>\n\u003c/head>\n\n\u003cbody\n  style=\"margin:0;padding:0;width:100%;background-color:#ffffff;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;\">\n  \u003ctable role=\"presentation\" width=\"100%\" align=\"center\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" bgcolor=\"#ffffff\"\n    style=\"width:100%;min-width:400px;border-collapse:collapse;background-color:#ffffff;mso-table-lspace:0pt;mso-table-rspace:0pt;\">\n    \u003ctr>\n      \u003ctd align=\"center\" valign=\"top\" style=\"padding:0;text-align:center;\">\n        \u003c!--[if mso]>\n        \u003ctable role=\"presentation\" width=\"800\" align=\"center\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"width:800px;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;\">\n          \u003ctr>\u003ctd>\n        \u003c![endif]-->\n        \u003ctable role=\"presentation\" width=\"800\" align=\"center\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"\n          bgcolor=\"#ffffff\"\n          style=\"width:100%;min-width:400px;max-width:800px;table-layout:fixed;margin:0 auto;border-collapse:collapse;background-color:#ffffff;text-align:left;overflow-wrap:break-word;word-wrap:break-word;mso-table-lspace:0pt;mso-table-rspace:0pt;\">\n          \u003ctr>\n            \u003ctd align=\"center\" style=\"padding:0;font-size:0;line-height:0;\">\n              \u003cimg src=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/header.jpg\"\n                width=\"800\" height=\"500\" border=\"0\"\n                alt=\"Единый контент. Командное ретро — 25 ноября. Сделаем нашу работу лучше. Вместе.\"\n                style=\"display:block;width:100%;max-width:800px;height:auto;border:0;outline:none;text-decoration:none;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;line-height:22px;border-radius: 20px;\">\n            \u003c/td>\n          \u003c/tr>\n__RETRO_TITLE__\n__RETRO_INTRO__\n__RETRO_INSTRUCTIONS__\n          \u003ctr>\n            \u003ctd align=\"center\" valign=\"top\"\n              background=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/bg%2Dmain.jpg\"\n              bgcolor=\"#C8AD79\"\n              style=\"padding:0;background-color:#C8AD79;background-image:url('https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/bg%2Dmain.jpg');background-position:center top;background-repeat:no-repeat;background-size:100% 100%;border-radius:20px;overflow:hidden;vertical-align:top;font-size:0;line-height:0;\">\n              \u003c!--[if mso]>\n              \u003cv:rect xmlns:v=\"urn:schemas-microsoft-com:vml\" fill=\"true\" stroke=\"false\" style=\"width:600pt;height:738pt;\">\n                \u003cv:fill type=\"frame\" src=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/bg%2Dmain.jpg\" color=\"#C8AD79\" />\n                \u003cv:textbox inset=\"0,0,0,0\">\n              \u003c![endif]-->\n                \u003ctable role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"\n                  style=\"width:100%;table-layout:fixed;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;\">\n                  \u003ctr>\n                    \u003ctd align=\"center\" valign=\"top\"\n                      style=\"padding:60px 30px 60px;text-align:center;vertical-align:top;font-size:0;line-height:0;\">\n                      \u003c!-- Замените # на ссылку на доску. -->\n                      \u003ca href=\"__RETRO_URL__\" style=\"text-decoration:none;\">\n                        \u003cimg src=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/btn.jpg\"\n                          width=\"340\" height=\"60\" border=\"0\" alt=\"Перейти на доску\"\n                          style=\"display:block;width:340px;max-width:340px;height:auto;margin:0 auto;border:0;border-radius:30px;outline:none;text-decoration:none;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;line-height:22px;\">\n                      \u003c/a>\n                    \u003c/td>\n                  \u003c/tr>\n                  \u003ctr>\n                    \u003ctd align=\"center\" style=\"padding:0 0 30px;font-size:0;line-height:0;\">\n                      \u003cimg\n                        src=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/post%2Dit.png\"\n                        width=\"800\" height=\"774\" border=\"0\"\n                        alt=\"Что сохраним: процессы и практики, которые помогают достигать результатов и которые нравятся. Что надо изменить: сложности и процессы, которые стоит улучшить. Есть идеи, как это можно решить? Обязательно предложите! О чём договоримся: заполним вместе на встрече — обсудим предложения и договоримся о конкретных действиях.\"\n                        style=\"display:block;width:100%;max-width:800px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;line-height:22px;border-radius:20px;\">\n                    \u003c/td>\n                  \u003c/tr>\n                \u003c/table>\n              \u003c!--[if mso]>\n                \u003c/v:textbox>\n              \u003c/v:rect>\n              \u003c![endif]-->\n            \u003c/td>\n          \u003c/tr>\n          \u003ctr>\n            \u003ctd align=\"center\" style=\"padding-bottom:26px; padding-top: 30px; font-size:0;line-height:0;\">\n              \u003cimg src=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/date%2Dtext.png\"\n                width=\"800\" height=\"104\" border=\"0\"\n                alt=\"25 ноября, 16:00.\"\n                style=\"display:block;width:100%;max-width:800px;height:auto;border:0;outline:none;text-decoration:none;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;line-height:22px;border-radius: 20px\">\n            \u003c/td>\n          \u003c/tr>\n          \u003ctr>\n            \u003ctd align=\"center\" style=\"padding:0 30px;font-size:0;line-height:0;\">\n              \u003ctable role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"\n                style=\"width:100%;table-layout:fixed;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;\">\n                \u003ctr>\n                  \u003ctd align=\"center\" valign=\"middle\" height=\"20\"\n                    background=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/divider%2Dline.png\"\n                    bgcolor=\"#ffffff\"\n                    style=\"height:20px;padding:0;background-color:#ffffff;background-image:url('https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/divider%2Dline.png');background-position:center center;background-repeat:no-repeat;background-size:100% 20px;vertical-align:middle;font-size:0;line-height:0;\">\n                    \u003c!--[if mso]>\n                    \u003cv:rect xmlns:v=\"urn:schemas-microsoft-com:vml\" fill=\"true\" stroke=\"false\" style=\"width:555pt;height:15pt;\">\n                      \u003cv:fill type=\"frame\" src=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/divider%2Dline.png\" color=\"#ffffff\" />\n                      \u003cv:textbox inset=\"0,0,0,0\">\n                    \u003c![endif]-->\n                    \u003ctable role=\"presentation\" width=\"60\" align=\"center\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"\n                      bgcolor=\"#ffffff\"\n                      style=\"width:60px;min-width:60px;max-width:60px;margin:0 auto;table-layout:fixed;border-collapse:collapse;background-color:#ffffff;mso-table-lspace:0pt;mso-table-rspace:0pt;\">\n                      \u003ctr>\n                        \u003ctd align=\"center\" valign=\"middle\" width=\"60\" height=\"20\" bgcolor=\"#ffffff\"\n                          style=\"width:60px;height:20px;padding:0;background-color:#ffffff;vertical-align:middle;font-size:0;line-height:0;\">\n                          \u003cimg src=\"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/bell.png\"\n                            width=\"20\" height=\"20\" border=\"0\" alt=\"\" role=\"presentation\"\n                            style=\"display:block;width:20px;min-width:20px;max-width:20px;height:20px;margin:0 auto;border:0;outline:none;text-decoration:none;\">\n                        \u003c/td>\n                      \u003c/tr>\n                    \u003c/table>\n                    \u003c!--[if mso]>\n                      \u003c/v:textbox>\n                    \u003c/v:rect>\n                    \u003c![endif]-->\n                  \u003c/td>\n                \u003c/tr>\n              \u003c/table>\n            \u003c/td>\n          \u003c/tr>\n__RETRO_DURATION__\n__RETRO_FOOTER__\n        \u003c/table>\n        \u003c!--[if mso]>\n          \u003c/td>\u003c/tr>\n        \u003c/table>\n        \u003c![endif]-->\n      \u003c/td>\n    \u003c/tr>\n  \u003c/table>\n\u003c/body>\n\n\u003c/html>\n","sections":{"title":"          \u003ctr>\n            \u003ctd align=\"left\"\n              style=\"padding:32px 30px 22px;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:700;line-height:22px;mso-line-height-rule:exactly;text-align:left;\">\n              \u003cp\n                style=\"margin:0;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:700;line-height:22px;mso-line-height-rule:exactly;\">\n                \u003cstrong style=\"font-weight:700;\">__RETRO_TEXT__\u003c/strong>\n              \u003c/p>\n            \u003c/td>\n          \u003c/tr>","intro":"          \u003ctr>\n            \u003ctd align=\"left\"\n              style=\"padding:0 30px 22px;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:400;line-height:22px;mso-line-height-rule:exactly;text-align:left;\">\n              \u003cp\n                style=\"margin:0;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:400;line-height:22px;mso-line-height-rule:exactly;\">__RETRO_TEXT__\u003c/p>\n            \u003c/td>\n          \u003c/tr>","instructions":"          \u003ctr>\n            \u003ctd align=\"left\"\n              style=\"padding:0 30px 22px;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:400;line-height:22px;mso-line-height-rule:exactly;text-align:left;\">\n              \u003cp\n                style=\"margin:0;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:400;line-height:22px;mso-line-height-rule:exactly;\">__RETRO_TEXT__\u003c/p>\n            \u003c/td>\n          \u003c/tr>","duration":"          \u003ctr>\n            \u003ctd align=\"left\"\n              style=\"padding:30px 30px 43px;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:400;line-height:22px;mso-line-height-rule:exactly;text-align:left;\">\n              \u003cp\n                style=\"text-align: center; margin:0;color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:400;line-height:22px;mso-line-height-rule:exactly;\">__RETRO_TEXT__\u003c/p>\n            \u003c/td>\n          \u003c/tr>","footer":"          \u003ctr>\n            \u003ctd align=\"left\"\n              style=\"border-radius: 20px; background-color: #f2f4f7; padding: 30px 30px 30px; color:#333F48;font-family:Helvetica,Arial,sans-serif;font-size:19px;font-weight:400;line-height:22px;mso-line-height-rule:exactly;text-align:left;\">\n              \u003cp\n                style=\"text-align: center; margin:0;color:#7D838A;font-family:Helvetica,Arial,sans-serif;font-size:12px;font-weight:400;line-height:14px;mso-line-height-rule:exactly;\">__RETRO_TEXT__\u003c/p>\n            \u003c/td>\n          \u003c/tr>"},"defaults":{"subject":"Приглашаем на ретро с «Единым контентом»","title":"Приглашаем на ретро с «Единым контентом».","intro":"Поговорим о том, что волнует в работе всего проекта: от планирования и оценки задач до взаимодействия и подведения итогов.","instructions":"Добавляйте на доску вопросы и идеи, которые хотите обсудить.","duration":"Длительность встречи будет зависеть от количества тем для обсуждения.","footer":"Единый контент · Обсуждаем открыто, меняем вместе","buttonUrl":"#"},"headerAlt":"Единый контент. Командное ретро — 25 ноября. Сделаем нашу работу лучше. Вместе.","dateAlt":"25 ноября, 16:00."}</script>
+  <script type="application/json" id="email-template">{"defaults":{"subject":"Приглашаем на ретро с «Единым контентом»","title":"Приглашаем на ретро с «Единым контентом».","intro":"Поговорим о том, что волнует в работе всего проекта: от планирования и оценки задач до взаимодействия и подведения итогов.","instructions":"Добавляйте на доску вопросы и идеи, которые хотите обсудить.","duration":"Длительность встречи будет зависеть от количества тем для обсуждения.","footer":"Единый контент · Обсуждаем открыто, меняем вместе","buttonUrl":"#"},"headerAlt":"Единый контент. Командное ретро — 25 ноября. Сделаем нашу работу лучше. Вместе.","dateAlt":"25 ноября, 16:00.","notesAlt":"Что сохраним: процессы и практики, которые помогают достигать результатов и которые нравятся. Что надо изменить: сложности и процессы, которые стоит улучшить. Есть идеи, как это можно решить? Обязательно предложите! О чём договоримся: заполним вместе на встрече — обсудим предложения и договоримся о конкретных действиях.","sources":{"header":"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/header.jpg","date":"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/date%2Dtext.png","bell":"https://eimage.sendsay.ru/image/sberbank333/web%5Fcontent/outlook%2Dtemplate/img/bell.png"}}</script>
   <script id="mail-engine">
-    'use strict';
-    function createRetroEngine(config) {
-      const defaults = Object.freeze({...config.defaults});
-      const limits = Object.freeze({subject:250,title:1000,intro:12000,instructions:6000,duration:6000,footer:2000,buttonUrl:4000});
-      function normalize(input) {
-        const result = {...defaults};
-        if (input && typeof input === 'object' && !Array.isArray(input)) {
-          for (const key of Object.keys(defaults)) {
-            if (typeof input[key] === 'string') result[key] = input[key].slice(0, limits[key]);
-          }
-        }
-        return result;
-      }
-      function escapeHtml(value) {
-        return String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-      }
-      function safeUrl(value) {
-        const text = String(value || '').trim();
-        if (!text || text === '#') return '#';
-        try {
-          const url = new URL(text);
-          return (url.protocol === 'https:' || url.protocol === 'http:') && url.hostname ? url.href : null;
-        } catch (_) { return null; }
-      }
-      function formatText(value) {
-        return escapeHtml(value.trim()).replace(/\r\n?/g,'\n').replace(/\n/g,'<br>');
-      }
-      function generate(input) {
-        const state = normalize(input);
-        const href = safeUrl(state.buttonUrl);
-        const replacements = {SUBJECT:escapeHtml(state.subject.trim() || 'Приглашение на ретро'),URL:escapeHtml(href || '#')};
-        for (const [key, section] of Object.entries(config.sections)) {
-          replacements[key.toUpperCase()] = state[key].trim() ? section.replace('__RETRO_TEXT__',formatText(state[key])) : '';
-        }
-        const html = config.template.replace(/__RETRO_(SUBJECT|URL|TITLE|INTRO|INSTRUCTIONS|DURATION|FOOTER)__/g,(_,key)=>replacements[key]);
-        const fragment = html.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)[1].trim();
-        const text = [config.headerAlt,state.title,state.intro,state.instructions,'Перейти на доску: '+(href || '#'),config.dateAlt,state.duration,state.footer].filter(value=>value.trim()).join('\n\n');
-        return {html,fragment,text,valid:href !== null};
-      }
-      return Object.freeze({defaults,normalize,safeUrl,generate});
+'use strict';
+function createRetroEngine(config) {
+  const defaults = Object.freeze({...config.defaults});
+  const limits = {subject:250,title:1000,intro:12000,instructions:6000,duration:6000,footer:2000,buttonUrl:4000};
+  const sources = config.sources;
+  const assetBase = 'https://coopersino.github.io/mail-studio-light/retro/';
+  function normalize(input) {
+    const result = {...defaults};
+    if (input && typeof input === 'object' && !Array.isArray(input)) {
+      for (const key of Object.keys(defaults)) if (typeof input[key] === 'string') result[key] = input[key].slice(0,limits[key]);
     }
+    return result;
+  }
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  }
+  function safeUrl(value) {
+    const text = String(value || '').trim();
+    if (!text || text === '#') return '#';
+    try { const url = new URL(text); return ['https:','http:'].includes(url.protocol) && url.hostname ? url.href : null; }
+    catch (_) { return null; }
+  }
+  function formatText(value) {
+    // Nonbreaking spaces and very long pasted tokens must not expand a Word table.
+    return value.trim().replace(/[\u00a0\u202f]/g,' ').replace(/\r\n?/g,'\n').split(/(\s+)/).map(token=>{
+      const chars=Array.from(token);
+      if (/^\s*$/.test(token)) return escapeHtml(token);
+      const chunks=[];
+      for(let i=0;i<chars.length;i+=24) chunks.push(escapeHtml(chars.slice(i,i+24).join('')));
+      return chunks.join('&#8203;');
+    }).join('').replace(/\n/g,'<br>');
+  }
+  const tableStyle = 'border-collapse:collapse;table-layout:fixed;mso-table-lspace:0pt;mso-table-rspace:0pt;';
+  function table(width,rows,align='left') {
+    return `<table role="presentation" width="${width}" align="${align}" cellspacing="0" cellpadding="0" border="0" style="width:${width}px;${tableStyle}">${rows}</table>`;
+  }
+  function cell(width,content,extra='') {
+    return `<td width="${width}" valign="top" style="width:${width}px;padding:0;font-size:0;line-height:0;vertical-align:top;${extra}">${content}</td>`;
+  }
+  function img(src,width,height,alt='',decorative=false) {
+    return `<img src="${escapeHtml(src)}" width="${width}" height="${height}" border="0" alt="${escapeHtml(alt)}"${decorative?' role="presentation"':''} style="display:block;width:${width}px;min-width:${width}px;max-width:${width}px;height:${height}px;border:0;outline:none;text-decoration:none;vertical-align:top;">`;
+  }
+  function generate(input,requestedWidth=800) {
+    const state=normalize(input);
+    const width=Math.min(800,Math.max(400,Math.round(Number(requestedWidth)||800)));
+    const contentWidth=width-60;
+    const href=safeUrl(state.buttonUrl);
+    function spacer(height,color='#ffffff') {
+      return `<tr><td width="${width}" height="${height}" bgcolor="${color}" style="width:${width}px;height:${height}px;padding:0;font-size:1px;line-height:${height}px;mso-line-height-rule:exactly;">&nbsp;</td></tr>`;
+    }
+    function textBlock(value,top,bottom,{bold=false,center=false,footer=false}={}) {
+      if(!value.trim()) return '';
+      const color=footer?'#7D838A':'#333F48';
+      const size=footer?12:19;
+      const line=footer?14:22;
+      const bg=footer?'#f2f4f7':'#ffffff';
+      const css=`color:${color};font-family:Helvetica,Arial,sans-serif;font-size:${size}px;font-weight:${bold?700:400};line-height:${line}px;mso-line-height-rule:exactly;text-align:${center?'center':'left'};white-space:normal;word-wrap:break-word;overflow-wrap:break-word;`;
+      const text=formatText(value);
+      const p=`<p style="margin:0;padding:0;${css}">${bold?'<strong style="font-weight:700;">'+text+'</strong>':text}</p>`;
+      const lineRow=`<tr>${cell(30,'') }<td width="${contentWidth}" valign="top" style="width:${contentWidth}px;padding:0;${css}">${p}</td>${cell(30,'')}</tr>`;
+      const rows=(top?spacer(top,bg):'')+lineRow+(bottom?spacer(bottom,bg):'');
+      return `<tr><td width="${width}" bgcolor="${bg}" style="width:${width}px;padding:0;background-color:${bg};">${table(width,rows)}</td></tr>`;
+    }
+    function imageRow(src,height,alt='',decorative=false) {
+      return `<tr>${cell(width,img(src,width,height,alt,decorative))}</tr>`;
+    }
+    const side=(width-340)/2;
+    const boardButton=img(assetBase+'board-button-v1.jpg',340,60,'Перейти на доску');
+    const buttonCells=cell(side,img(assetBase+'board-left-v1.jpg',side,60,'',true))+
+      cell(340,`<a href="${escapeHtml(href||'#')}" style="text-decoration:none;">${boardButton}</a>`)+
+      cell(side,img(assetBase+'board-right-v1.jpg',side,60,'',true));
+    const board = imageRow(assetBase+'board-top-v1.jpg',60,'',true)+
+      `<tr>${cell(width,table(width,'<tr>'+buttonCells+'</tr>'))}</tr>`+
+      imageRow(assetBase+'board-gap-v1.jpg',60,'',true)+
+      imageRow(assetBase+'board-notes-v1.jpg',Math.round(width*1548/1600),config.notesAlt)+
+      imageRow(assetBase+'board-bottom-v1.jpg',30,'',true);
+    const lineSide=(contentWidth-60)/2;
+    const rule=table(lineSide,`<tr><td width="${lineSide}" height="9" style="width:${lineSide}px;height:9px;padding:0;font-size:1px;line-height:9px;mso-line-height-rule:exactly;">&nbsp;</td></tr><tr><td width="${lineSide}" height="10" style="width:${lineSide}px;height:10px;padding:0;border-top:1px solid #D0D7DD;font-size:1px;line-height:10px;mso-line-height-rule:exactly;">&nbsp;</td></tr>`);
+    const bell=table(60,`<tr>${cell(20,'')}${cell(20,img(sources.bell,20,20,'',true))}${cell(20,'')}</tr>`);
+    const divider=`<tr>${cell(width,table(width,'<tr>'+cell(30,'')+cell(lineSide,rule)+cell(60,bell)+cell(lineSide,rule)+cell(30,'')+'</tr>'))}</tr>`;
+    const rows=imageRow(sources.header,Math.round(width*1000/1600),config.headerAlt)+
+      textBlock(state.title,32,22,{bold:true})+textBlock(state.intro,0,22)+textBlock(state.instructions,0,22)+
+      board+spacer(30)+imageRow(sources.date,Math.round(width*208/1600),config.dateAlt)+spacer(26)+divider+
+      textBlock(state.duration,30,43,{center:true})+textBlock(state.footer,30,30,{center:true,footer:true});
+    const fragment=table(width,rows,'center');
+    const html=`<!doctype html>\n<html lang="ru" xmlns:o="urn:schemas-microsoft-com:office:office"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><title>${escapeHtml(state.subject.trim()||'Приглашение на ретро')}</title><!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]--></head><body style="margin:0;padding:0;background-color:#ffffff;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">${fragment}</body></html>`;
+    const text=[config.headerAlt,state.title,state.intro,state.instructions,'Перейти на доску: '+(href||'#'),config.notesAlt,config.dateAlt,state.duration,state.footer].filter(value=>value.trim()).join('\n\n');
+    return {html,fragment,text,valid:href!==null,width,compatibilityVersion:2};
+  }
+  return Object.freeze({defaults,normalize,safeUrl,generate});
+}
+
   </script>
   <script id="mail-app">
     'use strict';
@@ -270,7 +321,8 @@
       });
       function update() {
         clearTimeout(renderTimer);
-        const email = engine.generate(state);
+        const previewWidth = view==='mobile' ? 400 : Math.max(400,Math.min(800,Math.floor(wrap.getBoundingClientRect().width/2)*2));
+        const email = engine.generate(state,previewWidth);
         document.getElementById('subject-preview').textContent = state.subject.trim() || 'Без темы';
         urlField.setAttribute('aria-invalid',String(!email.valid));
         urlHint.classList.toggle('error',!email.valid);
@@ -302,7 +354,7 @@
         view=name;
         ['desktop','mobile'].forEach(key=>document.getElementById(key).setAttribute('aria-pressed',String(key===name)));
         wrap.style.maxWidth=(name==='mobile'?400:800)+'px';
-        resizeFrame();
+        update();
       }));
       function exportEmail() {
         const email=engine.generate(state);
@@ -318,7 +370,7 @@
         try {
           if (navigator.clipboard && window.ClipboardItem) {
             try {
-              await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([email.fragment],{type:'text/html'}),'text/plain':new Blob([email.text],{type:'text/plain'})})]);
+              await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([email.html],{type:'text/html'}),'text/plain':new Blob([email.text],{type:'text/plain'})})]);
               copied=true;
             } catch (_) {}
           }
@@ -332,7 +384,7 @@
               selection.removeAllRanges();selection.addRange(range);
               const onCopy=event=>{
                 if (!event.clipboardData) return;
-                event.clipboardData.setData('text/html',email.fragment);
+                event.clipboardData.setData('text/html',email.html);
                 event.clipboardData.setData('text/plain',email.text);
                 event.preventDefault();copied=true;
               };
@@ -356,7 +408,7 @@
       });
       document.getElementById('help').addEventListener('click',()=>document.getElementById('guide').showModal());
       document.getElementById('close-guide').addEventListener('click',()=>document.getElementById('guide').close());
-      window.addEventListener('resize',resizeFrame);
+      window.addEventListener('resize',()=>{clearTimeout(renderTimer);renderTimer=setTimeout(update,120);});
       fillFields();update();
     })();
   </script>
