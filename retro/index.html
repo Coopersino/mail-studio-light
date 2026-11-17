@@ -155,6 +155,11 @@ function createRetroEngine(config) {
         result.intro=[input.intro.slice(0,12000),input.instructions.slice(0,6000)].filter(value=>value.trim()).join('\n\n');
       }
     }
+    // Restore the template's word bindings in unchanged drafts saved by older versions.
+    for(const key of ['title','intro','duration']) {
+      if(!/[\u00a0\u202f]|&(?:nbsp|#160|#x0*a0);/i.test(result[key]) &&
+         result[key]===defaults[key].replace(/[\u00a0\u202f]/g,' ')) result[key]=defaults[key];
+    }
     return result;
   }
   function escapeHtml(value) {
@@ -167,8 +172,8 @@ function createRetroEngine(config) {
     catch(_) { return null; }
   }
   function formatText(value) {
-    return value.trim().replace(/[\u00a0\u202f]/g,' ').replace(/\r\n?/g,'\n').split(/(\s+)/).map(token=>{
-      if(/^\s*$/.test(token)) return escapeHtml(token);
+    return value.trim().replace(/&(?:nbsp|#160|#x0*a0);/gi,'\u00a0').replace(/\r\n?/g,'\n').split(/(\s+)/).map(token=>{
+      if(/^\s*$/.test(token)) return escapeHtml(token).replace(/\u00a0/g,'&nbsp;').replace(/\u202f/g,'&#8239;');
       const chars=Array.from(token),parts=[];
       for(let i=0;i<chars.length;i+=24) parts.push(escapeHtml(chars.slice(i,i+24).join('')));
       return parts.join('&#8203;');
